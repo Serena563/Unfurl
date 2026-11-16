@@ -58,6 +58,8 @@ h1,h2,h3{margin:0;font-family:var(--serif);font-weight:500;letter-spacing:-.01em
 .dark .av0{background-color:#3A2A45;color:#E3C9EE}.dark .av1{background-color:#2B3250;color:#C8D1F0}.dark .av2{background-color:#4A2A33;color:#F2C6D1}.dark .av3{background-color:#24382A;color:#C6E3CF}.dark .av4{background-color:#3B3426;color:#E8D9B8}.dark .av5{background-color:#22363B;color:#C2E0E6}
 .field{border:none;outline:none;background:transparent;font-size:15px;line-height:1.5;padding:0;width:100%;min-width:0}
 textarea.field{resize:none;min-height:46px;display:block;overflow:hidden}
+.field.card{border:1px solid var(--line);background:var(--card);border-radius:14px}
+.field.card:focus{border-color:var(--accent)}
 .screen{max-width:600px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 20px calc(130px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
 .screen.nonav{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
 .charcard{display:flex;gap:14px;align-items:center;padding:14px;border-radius:18px;background:var(--card);border:1px solid var(--line);text-align:left;width:100%}
@@ -140,7 +142,7 @@ svg{flex-shrink:0}
 <input type="file" id="importpick" accept="application/json,.json" hidden>
 <script>
 'use strict';
-const VERSION = '2026-11-16c';
+const VERSION = '2026-11-16d';
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -162,6 +164,7 @@ function mix(hex, other, amt) {
 }
 
 const I = {
+  globe: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9s1.2-6.4 3.8-9z"/></svg>',
   back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
   next: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
   down: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
@@ -240,14 +243,14 @@ function defaultState() {
         { id: 'q_who', sid: 'sb_who', text: 'How would {their} best friend describe {them}? And {their} worst enemy?', on: true }
       ]
     },
-    series: [], books: [], chars: [], notes: [], links: []
+    worlds: [], series: [], books: [], chars: [], notes: [], links: []
   };
 }
 function normalize(s) {
   const d = defaultState();
   s = s && typeof s === 'object' ? s : d;
   s.settings = Object.assign({}, d.settings, s.settings || {});
-  for (const k of ['series', 'books', 'chars', 'notes', 'links']) if (!Array.isArray(s[k])) s[k] = [];
+  for (const k of ['worlds', 'series', 'books', 'chars', 'notes', 'links']) if (!Array.isArray(s[k])) s[k] = [];
   for (const c of s.chars) {
     c.books = c.books || []; c.images = c.images || []; c.blocks = c.blocks || []; c.hist = c.hist || [];
     c.pron = c.pron || 'they'; if (c.hue == null) c.hue = 0;
@@ -287,19 +290,39 @@ const charById = id => S.chars.find(c => c.id === id);
 const bookById = id => S.books.find(b => b.id === id);
 const seriesById = id => S.series.find(s => s.id === id);
 function seriesBooks(sid) { return S.books.filter(b => b.series === sid).sort((a, b) => a.part - b.part); }
+const worldById = id => S.worlds.find(w => w.id === id);
+function worldOfBook(b) { if (!b) return null; const w = b.series ? (seriesById(b.series) || {}).world : b.world; return worldById(w) ? w : null; }
+function soloBooks() { return S.books.filter(b => !b.series).sort((a, b) => a.created - b.created); }
+function shelf() {
+  const groups = S.worlds.map(w => ({ world: w, series: S.series.filter(s => s.world === w.id), solos: soloBooks().filter(b => b.world === w.id) }));
+  groups.push({ world: null, series: S.series.filter(s => !worldById(s.world)), solos: soloBooks().filter(b => !worldById(b.world)) });
+  return groups;
+}
+function groupBooks(g) { return [...g.series.flatMap(s => seriesBooks(s.id)), ...g.solos]; }
+function orderedBooks() { return shelf().flatMap(groupBooks); }
+function worldBooks(wid) { const g = shelf().find(g => g.world && g.world.id === wid); return g ? groupBooks(g) : []; }
+function renumber(sid) { seriesBooks(sid).forEach((x, i) => x.part = i + 1); }
+function bookChipLabel(b) { const s = seriesById(b.series); return s ? s.name + ' ' + b.part : b.title; }
 function bookName(b) { if (!b) return ''; const s = seriesById(b.series); return s ? 'Book ' + b.part : b.title; }
 function bookFull(b) { if (!b) return ''; const s = seriesById(b.series); return s ? 'Book ' + b.part + ' · ' + b.title : b.title; }
 const THEMES = { Ember: '#9C3D2E', Tide: '#2F5F86', Moss: '#4A6B3F', Plum: '#7A4E8C', Night: '#2B2F4A' };
 function bookColor(b) { return (b && (b.color || THEMES[b.theme])) || '#7A4E8C'; }
 function validScope() {
+  if (UI.scope.startsWith('world:') && !worldById(UI.scope.slice(6))) UI.scope = 'all';
   if (UI.scope.startsWith('series:') && !seriesById(UI.scope.slice(7))) UI.scope = 'all';
   if (UI.scope.startsWith('book:') && !bookById(UI.scope.slice(5))) UI.scope = 'all';
-  if (UI.chip !== 'all' && !bookById(UI.chip)) UI.chip = 'all';
+  if (UI.chip !== 'all' && !(UI.chip.startsWith('series:') ? seriesById(UI.chip.slice(7)) : bookById(UI.chip))) UI.chip = 'all';
+  if (UI.chip.startsWith('series:') && !UI.scope.startsWith('world:')) UI.chip = 'all';
 }
 function scopeBooks() {
   const sc = UI.scope;
   if (sc.startsWith('series:')) { const bs = seriesBooks(sc.slice(7)); return UI.chip === 'all' ? bs : bs.filter(b => b.id === UI.chip); }
   if (sc.startsWith('book:')) return S.books.filter(b => b.id === sc.slice(5));
+  if (sc.startsWith('world:')) {
+    if (UI.chip === 'all') return worldBooks(sc.slice(6));
+    if (UI.chip.startsWith('series:')) return seriesBooks(UI.chip.slice(7));
+    return S.books.filter(b => b.id === UI.chip);
+  }
   return null;
 }
 function scopeColor() {
@@ -309,8 +332,10 @@ function scopeColor() {
 }
 function scopeTitle() {
   const sc = UI.scope;
-  if (sc.startsWith('series:')) { const s = seriesById(sc.slice(7)); return { kicker: 'Series · ' + plural(seriesBooks(s.id).length, 'book', 'books'), title: s.name }; }
-  if (sc.startsWith('book:')) return { kicker: 'Standalone', title: bookById(sc.slice(5)).title };
+  if (sc.startsWith('series:')) { const s = seriesById(sc.slice(7)); const w = worldById(s.world); return { kicker: 'Series · ' + plural(seriesBooks(s.id).length, 'book', 'books') + (w ? ' · ' + w.name : ''), title: s.name }; }
+  if (sc.startsWith('book:')) { const b = bookById(sc.slice(5)); const w = worldById(b.world); return { kicker: w ? 'Standalone · ' + w.name : 'Standalone', title: b.title }; }
+  if (sc.startsWith('world:')) { const w = worldById(sc.slice(6)); const g = shelf().find(g => g.world && g.world.id === w.id);
+    return { kicker: 'World · ' + [g.series.length ? plural(g.series.length, 'series', 'series') : '', g.solos.length ? plural(g.solos.length, 'standalone', 'standalones') : ''].filter(Boolean).join(', ') || 'World · empty so far', title: w.name }; }
   return { kicker: S.books.length ? 'Everything' : 'No books yet', title: 'All characters' };
 }
 function charsInScope() {
@@ -513,13 +538,17 @@ function sideHTML() {
   let h = `<div style="font-family:var(--serif);font-size:24px;font-weight:600;padding:0 8px">Unfurl</div><div class="stack g4">
     <div class="label" style="padding:0 8px 6px">Books</div>
     ${link(UI.scope === 'all', 'data-a="scope" data-s="all"', '', 'All characters')}`;
-  for (const s of S.series) {
-    const on = UI.scope === 'series:' + s.id;
-    h += `<button class="sidelink ${on && UI.chip === 'all' ? 'on' : ''}" data-a="scope" data-s="series:${s.id}" style="font-weight:600">${I.book}${esc(s.name)}</button>`;
-    for (const b of seriesBooks(s.id)) h += `<button class="sidelink ${on && UI.chip === b.id ? 'on' : ''}" style="padding-left:36px" data-a="scope" data-s="series:${s.id}" data-chip="${b.id}"><span class="d" style="background:${bookColor(b)}"></span>Book ${b.part}<span class="muted ellip" style="font-size:12px">· ${esc(b.title)}</span></button>`;
+  for (const g of shelf()) {
+    const pad = g.world ? 14 : 0;
+    if (g.world) h += `<button class="sidelink ${UI.scope === 'world:' + g.world.id && UI.chip === 'all' ? 'on' : ''}" data-a="scope" data-s="world:${g.world.id}" style="font-weight:600;margin-top:6px">${I.globe}${esc(g.world.name)}</button>`;
+    for (const s of g.series) {
+      const on = UI.scope === 'series:' + s.id;
+      h += `<button class="sidelink ${on && UI.chip === 'all' ? 'on' : ''}" data-a="scope" data-s="series:${s.id}" style="font-weight:600;padding-left:${8 + pad}px">${I.book}${esc(s.name)}</button>`;
+      for (const b of seriesBooks(s.id)) h += `<button class="sidelink ${on && UI.chip === b.id ? 'on' : ''}" style="padding-left:${36 + pad}px" data-a="scope" data-s="series:${s.id}" data-chip="${b.id}"><span class="d" style="background:${bookColor(b)}"></span>Book ${b.part}<span class="muted ellip" style="font-size:12px">· ${esc(b.title)}</span></button>`;
+    }
+    for (const b of g.solos) h += `<button class="sidelink ${UI.scope === 'book:' + b.id ? 'on' : ''}" style="padding-left:${8 + pad}px" data-a="scope" data-s="book:${b.id}"><span class="d" style="background:${bookColor(b)}"></span>${esc(b.title)}</button>`;
   }
-  for (const b of S.books.filter(b => !b.series)) h += link(UI.scope === 'book:' + b.id, `data-a="scope" data-s="book:${b.id}"`, bookColor(b), b.title);
-  h += `<button class="sidelink muted" data-a="newBook">+ New book</button></div><div style="flex:1"></div><div class="stack g4">
+  h += `<button class="sidelink muted" data-a="newBook">+ New book</button><button class="sidelink muted" data-a="newWorld">+ New world</button></div><div style="flex:1"></div><div class="stack g4">
     ${link(UI.view === 'connections', 'data-a="go" data-v="connections"', '', 'Connections')}
     ${link(UI.view === 'notes', 'data-a="go" data-v="notes"', '', 'Loose notes')}
     ${link(UI.view === 'settings', 'data-a="go" data-v="settings"', '', 'Settings')}</div>`;
@@ -535,14 +564,22 @@ function listHTML(inCol) {
     const bs = seriesBooks(sc.slice(7));
     chips = `<div class="chips"><button class="chip ${UI.chip === 'all' ? 'on' : ''}" data-a="chip" data-chip="all">All</button>${bs.map(b => `<button class="chip ${UI.chip === b.id ? 'on' : ''}" data-a="chip" data-chip="${b.id}">Book ${b.part}</button>`).join('')}</div>`;
   }
-  const editBook = (() => { const bs = scopeBooks(); return bs && bs.length === 1 ? `<button class="btn-text" data-a="editBook" data-id="${bs[0].id}">Edit book</button>` : ''; })();
+  if (sc.startsWith('world:')) {
+    const g = shelf().find(g => g.world && g.world.id === sc.slice(6));
+    chips = `<div class="chips"><button class="chip ${UI.chip === 'all' ? 'on' : ''}" data-a="chip" data-chip="all">All</button>${g.series.map(x => `<button class="chip ${UI.chip === 'series:' + x.id ? 'on' : ''}" data-a="chip" data-chip="series:${x.id}">${esc(x.name)}</button>`).join('')}${g.solos.map(b => `<button class="chip ${UI.chip === b.id ? 'on' : ''}" data-a="chip" data-chip="${b.id}">${esc(b.title)}</button>`).join('')}</div>`;
+  }
+  const editBook = (() => {
+    if (sc.startsWith('world:') && UI.chip === 'all') return `<button class="btn-text" data-a="editWorld" data-id="${sc.slice(6)}">Edit world</button>`;
+    if (sc.startsWith('world:') && UI.chip.startsWith('series:')) return `<button class="btn-text" data-a="editSeries" data-id="${UI.chip.slice(7)}">Edit series</button>`;
+    if (sc.startsWith('series:') && UI.chip === 'all') return `<button class="btn-text" data-a="editSeries" data-id="${sc.slice(7)}">Edit series</button>`;
+    const bs = scopeBooks(); return bs && bs.length === 1 ? `<button class="btn-text" data-a="editBook" data-id="${bs[0].id}">Edit book</button>` : ''; })();
   const cards = chars.map(c => `<button class="charcard ${inCol && UI.charId === c.id && ['list','profile','growth','charsettings'].includes(UI.view) ? 'sel' : ''}" data-a="open" data-id="${c.id}">
       ${avatar(c, inCol ? 44 : 52)}<span class="stack g4 grow"><span style="font-size:16px;font-weight:600" class="ellip">${esc(c.name || 'Unnamed')}</span>
       <span class="small muted ellip">${esc(snippet(c))}</span>${inCol ? '' : `<span class="tiny muted ellip">${esc(charBooksLabel(c))} · ${plural(c.blocks.filter(blockFilled).length, 'block', 'blocks')}</span>`}</span></button>`).join('');
   const empty = !S.chars.length ? `<div class="card pad stack g10"><div style="font-family:var(--serif);font-size:20px">Start with just a name.</div>
       <div class="muted" style="font-size:14px;line-height:1.5">Nothing has to be filled in up front. Add what you know, when you know it.</div>
       ${S.books.length ? '' : `<div class="muted" style="font-size:14px;line-height:1.5">Tip: add a book first, so your characters know where they belong.</div><button class="btn-line" data-a="newBook">+ New book</button>`}</div>`
-    : !chars.length ? `<div class="empty-hint">${UI.q ? 'No one by that name.' : 'No characters in this book yet.'}</div>` : '';
+    : !chars.length ? `<div class="empty-hint">${UI.q ? 'No one by that name.' : (sc.startsWith('world:') && UI.chip === 'all' ? 'No characters in this world yet.' : 'No characters here yet.')}</div>` : '';
   const header = inCol ? '' : `<div class="row between"><div style="font-family:var(--serif);font-size:22px;font-weight:600">Unfurl</div>
       <div class="row g8"><button class="btn-round" data-a="go" data-v="connections" aria-label="Connections">${I.web}</button><button class="btn-round" data-a="search" aria-label="Search characters">${I.search}</button></div></div>
     <button class="card row between" style="min-height:56px;padding:10px 16px;text-align:left;width:100%;border-radius:16px" data-a="scopeSheet">
@@ -671,8 +708,9 @@ function growthHTML(c) {
 
 function charSettingsHTML(c) {
   const nm = esc(c.name || 'Unnamed');
-  const bookChips = S.books.length ? S.series.map(s => seriesBooks(s.id)).flat().concat(S.books.filter(b => !b.series)).map(b =>
-    `<button class="chip ${c.books.includes(b.id) ? 'on' : ''}" data-a="charBook" data-c="${c.id}" data-id="${b.id}">${esc(b.series ? (seriesById(b.series).name + ' ' + b.part) : b.title)}</button>`).join('') : '<span class="small muted">No books yet.</span>';
+  const bookChips = S.books.length ? shelf().map(g => { const bs = groupBooks(g); if (!bs.length) return '';
+    return `<div class="stack g6" style="width:100%">${g.world && S.worlds.length ? `<div class="tiny muted row g4">${I.globe}${esc(g.world.name)}</div>` : (S.worlds.length ? '<div class="tiny muted">Not in a world</div>' : '')}<div class="row g8 wrap">${bs.map(b =>
+    `<button class="chip ${c.books.includes(b.id) ? 'on' : ''}" data-a="charBook" data-c="${c.id}" data-id="${b.id}">${esc(bookChipLabel(b))}</button>`).join('')}</div></div>`; }).join('') : '<span class="small muted">No books yet.</span>';
   return `<div class="screen nonav narrow"><div class="row g12"><button class="btn-round" data-a="go" data-v="profile" aria-label="Back">${I.back}</button><h1 style="font-size:26px">${nm}'s settings</h1></div>
     <div class="stack g10"><div class="label">Pronouns</div><div class="seg">${['she', 'he', 'they', 'other'].map(p => `<button class="${(c.pronLabel || c.pron) === p ? 'on' : ''}" data-a="pron" data-c="${c.id}" data-p="${p}">${p}</button>`).join('')}</div>
       <div class="tiny muted">Start blocks read right for ${nm}. “Other” uses they/them.</div></div>
@@ -757,7 +795,14 @@ function settingsHTML(wide) {
           <button class="btn-text" style="justify-content:flex-start" data-a="sbAddLine" data-id="${sb.id}">${I.plus} Add a line</button></div>`
         : `<button class="btn-text tiny" style="padding-left:44px;min-height:34px;justify-content:flex-start;font-size:13px" data-a="sbOpen" data-id="${sb.id}">Lines: ${esc((sb.lines || []).map(l => l.label).join(', ') || 'none')} · edit</button>`) : ''}</div>`).join('');
   const dbx = dbxToken();
-  const books = S.series.map(s => seriesBooks(s.id)).flat().concat(S.books.filter(b => !b.series));
+  const rowBtn = (a, id, inner, pad) => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0 0 0 ${pad || 0}px" data-a="${a}" data-id="${id}">${inner}<span class="muted">${I.next}</span></button>`;
+  const shelfRows = shelf().map(g => {
+    let r = g.world ? rowBtn('editWorld', g.world.id, `<span class="row g8 grow" style="font-weight:600">${I.globe}${esc(g.world.name)}<span class="muted small" style="font-weight:400">· world</span></span>`) : '';
+    const pad = g.world ? 18 : 0;
+    for (const s2 of g.series) { r += rowBtn('editSeries', s2.id, `<span class="row g8 grow" style="font-weight:600">${I.book}${esc(s2.name)}<span class="muted small" style="font-weight:400">· series</span></span>`, pad);
+      for (const b of seriesBooks(s2.id)) r += rowBtn('editBook', b.id, `<span class="d" style="width:12px;height:12px;border-radius:6px;background:${bookColor(b)}"></span><span class="grow">${esc(bookFull(b))}</span>`, pad + 26); }
+    for (const b of g.solos) r += rowBtn('editBook', b.id, `<span class="d" style="width:12px;height:12px;border-radius:6px;background:${bookColor(b)}"></span><span class="grow">${esc(b.title)} <span class="muted small">· standalone</span></span>`, pad);
+    return r; }).join('');
   return `<div class="screen narrow" style="gap:26px"><div class="row g12"><button class="btn-round mobile-only" data-a="go" data-v="list" aria-label="Back">${I.back}</button><h1 class="h1">Settings</h1></div>
     <section class="stack g10"><h2 class="h2">Help questions</h2>
       <button class="card row between g12" style="padding:14px 16px;text-align:left;width:100%" data-a="helpDefault"><span class="stack g4"><span style="font-size:14px;font-weight:600">On for new characters</span><span class="small muted">You can still switch it per character</span></span>${tog(st.helpDefault)}</button>
@@ -768,8 +813,9 @@ function settingsHTML(wide) {
       <div class="card list-rows" style="padding:0 12px">${sbs}</div>
       <button class="btn-dash" style="min-height:48px" data-a="addBlock" data-start="1">${I.plus} Add a start block</button></section>
     <section class="stack g10"><h2 class="h2">Books</h2>
-      ${books.length ? `<div class="card list-rows">${books.map(b => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0" data-a="editBook" data-id="${b.id}"><span class="d" style="width:12px;height:12px;border-radius:6px;background:${bookColor(b)}"></span><span class="grow">${esc(bookFull(b))}${b.series ? `<span class="muted small"> · ${esc(seriesById(b.series).name)}</span>` : ''}</span><span class="muted">${I.next}</span></button>`).join('')}</div>` : ''}
-      <button class="btn-dash" style="min-height:48px" data-a="newBook">${I.plus} New book</button></section>
+      <div class="small muted" style="line-height:1.45">A world holds series and standalones that share one setting. Tap a book to move it into a series or out of one.</div>
+      ${shelfRows ? `<div class="card list-rows">${shelfRows}</div>` : ''}
+      <div class="row g8"><button class="btn-dash grow" style="min-height:48px" data-a="newBook">${I.plus} New book</button><button class="btn-dash grow" style="min-height:48px" data-a="newWorld">${I.plus} New world</button></div></section>
     <section class="stack g10"><h2 class="h2">Look</h2>
       <button class="card row between g12" style="padding:14px 16px;text-align:left;width:100%" data-a="dark"><span style="font-size:15px;font-weight:500">Dark mode</span>${tog(st.dark)}</button>
       <div class="small muted">Each book keeps its own colour theme. Change it under Books.</div></section>
@@ -792,6 +838,17 @@ function sheetFrame(title, inner, cancel = 'Cancel') {
   return `<div class="sheet-wrap" data-a="sheetBg"><div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="grabber"></div>
     <div class="row between"><button class="btn-text" style="color:var(--soft)" data-a="closeSheet">${cancel}</button><div style="font-size:15px;font-weight:600">${esc(title)}</div><div style="width:52px"></div></div>${inner}</div></div>`;
 }
+function check(on) { return `<span style="width:22px;height:22px;border-radius:6px;border:2px solid ${on ? 'var(--accent)' : 'var(--dash)'};background:${on ? 'var(--accent)' : 'transparent'};display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-size:14px;flex-shrink:0">${on ? '✓' : ''}</span>`; }
+function worldPickHTML(d, hint) {
+  const opt = (id, label) => `<button class="chip ${(d.world || '') === id ? 'on' : ''}" data-a="wpick" data-w="${id}">${esc(label)}</button>`;
+  return `<div class="stack g10"><div class="label">World</div><div class="row g8 wrap">${opt('', 'No world')}${S.worlds.map(w => opt(w.id, w.name)).join('')}${opt('new', '+ New world')}</div>
+    ${d.world === 'new' ? `<input class="field card" style="padding:12px 14px" data-f="sd" data-k="newWorld" value="${esc(d.newWorld)}" placeholder="Name of the world" aria-label="Name of the new world">` : ''}
+    <div class="tiny muted">${esc(hint)}</div></div>`;
+}
+function resolveWorld(d) {
+  if (d.world === 'new') { const w = { id: uid(), name: (d.newWorld || '').trim() || 'Untitled world' }; S.worlds.push(w); d.world = w.id; return w.id; }
+  return worldById(d.world) ? d.world : null;
+}
 function renderSheet() {
   const el = $('#sheet'); const d = UI.sd;
   if (!UI.sheet) { el.innerHTML = ''; return; }
@@ -799,8 +856,8 @@ function renderSheet() {
   if (UI.sheet === 'newChar') {
     const bs = scopeBooks() || [];
     const sc = UI.scope;
-    const all = sc.startsWith('series:') ? seriesBooks(sc.slice(7)) : sc.startsWith('book:') ? bs : S.series.map(s => seriesBooks(s.id)).flat().concat(S.books.filter(b => !b.series));
-    const opts = all.map(b => `<button class="chip ${d.books.includes(b.id) ? 'on' : ''}" data-a="ncBook" data-id="${b.id}">${esc(sc === 'all' ? bookFull(b) : bookName(b))}</button>`).join('');
+    const all = sc.startsWith('series:') ? seriesBooks(sc.slice(7)) : sc.startsWith('book:') ? bs : sc.startsWith('world:') ? worldBooks(sc.slice(6)) : orderedBooks();
+    const opts = all.map(b => `<button class="chip ${d.books.includes(b.id) ? 'on' : ''}" data-a="ncBook" data-id="${b.id}">${esc(sc.startsWith('series:') ? bookName(b) : bookChipLabel(b))}</button>`).join('');
     const wholeOn = sc.startsWith('series:') && all.length && all.every(b => d.books.includes(b.id));
     const pf = d.pron === 'other' ? 'they' : d.pron;
     const preview = S.settings.startBlocks.map(sb => fill(sb.tpl, pf)).join(' · ');
@@ -823,13 +880,34 @@ function renderSheet() {
     const series = S.series;
     const nextPart = sid => seriesBooks(sid).length + 1;
     let kinds = '';
+    const radios = ks => ks.map(k => `<button class="radio ${d.kind === k.id ? 'on' : ''}" data-a="bkKind" data-k="${k.id}"><span class="ring"></span><span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(k.label)}</span><span class="tiny muted">${esc(k.sub)}</span></span></button>`).join('');
+    const showWorld = d.kind === 'new' || d.kind === 'solo' || (edit && d.kind === 'keep' && !bookById(d.id).series);
+    const wpick = showWorld ? worldPickHTML(d, d.kind === 'new' ? 'The new series lives in this world.' : 'Optional. Put this book in a world it shares with other books.') : '';
+    const seriesWorldNote = d.kind && d.kind.startsWith('add:') && worldById((seriesById(d.kind.slice(4)) || {}).world) ? `<div class="tiny muted">It joins the world ${esc(worldById(seriesById(d.kind.slice(4)).world).name)}, like the rest of the series.</div>` : '';
+    if (edit) {
+      const b = bookById(d.id); const cur = seriesById(b.series);
+      const ks = [];
+      if (cur) {
+        ks.push({ id: 'keep', label: 'Keep as Book ' + b.part + ' of ' + cur.name, sub: 'No change' });
+        for (const s2 of series) if (s2.id !== cur.id) ks.push({ id: 'add:' + s2.id, label: 'Move to ' + s2.name, sub: 'Becomes Book ' + nextPart(s2.id) });
+        ks.push({ id: 'new', label: 'Start a new series with it', sub: 'It becomes Book 1' });
+        ks.push({ id: 'solo', label: 'Make it a standalone', sub: 'Takes it out of ' + cur.name });
+      } else {
+        ks.push({ id: 'keep', label: 'Keep it a standalone', sub: 'No change' });
+        ks.push({ id: 'new', label: 'Turn it into a series', sub: 'This book becomes Book 1' });
+        for (const s2 of series) ks.push({ id: 'add:' + s2.id, label: 'Add to ' + s2.name, sub: 'Becomes Book ' + nextPart(s2.id) });
+      }
+      kinds = `<div class="stack g10"><div class="label">Series</div>${radios(ks)}
+        ${d.kind === 'new' ? `<input class="field card" style="padding:12px 14px" data-f="sd" data-k="seriesName" value="${esc(d.seriesName)}" placeholder="Series name" aria-label="Series name">` : ''}${seriesWorldNote}</div>${wpick}
+        ${cur && d.kind === 'keep' ? `<div class="tiny muted">The world of a series is set on the series itself — tap “Edit series”.</div>` : ''}`;
+    }
     if (!edit) {
       const ks = [];
       for (const s of series) ks.push({ id: 'add:' + s.id, label: 'Part of ' + s.name, sub: 'Book ' + nextPart(s.id) + ' in the series' });
       ks.push({ id: 'new', label: 'The start of a new series', sub: 'Name the series below' });
       ks.push({ id: 'solo', label: 'A standalone', sub: 'No series' });
-      kinds = `<div class="stack g10"><div class="label">This book is</div>${ks.map(k => `<button class="radio ${d.kind === k.id ? 'on' : ''}" data-a="bkKind" data-k="${k.id}"><span class="ring"></span><span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(k.label)}</span><span class="tiny muted">${esc(k.sub)}</span></span></button>`).join('')}
-        ${d.kind === 'new' ? `<input class="field card" style="padding:12px 14px" data-f="sd" data-k="seriesName" value="${esc(d.seriesName)}" placeholder="Series name" aria-label="Series name">` : ''}</div>`;
+      kinds = `<div class="stack g10"><div class="label">This book is</div>${radios(ks)}
+        ${d.kind === 'new' ? `<input class="field card" style="padding:12px 14px" data-f="sd" data-k="seriesName" value="${esc(d.seriesName)}" placeholder="Series name" aria-label="Series name">` : ''}${seriesWorldNote}</div>${wpick}`;
       if (d.kind && d.kind.startsWith('add:')) {
         const sid = d.kind.slice(4); const prev = S.chars.filter(c => c.books.some(id => (bookById(id) || {}).series === sid));
         if (prev.length) kinds += `<div class="stack g10"><div class="label">Bring characters along</div><div class="card list-rows">${prev.map(c => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0;font-size:15px" data-a="bkBring" data-id="${c.id}"><span style="width:22px;height:22px;border-radius:6px;border:2px solid ${d.bring[c.id] ? color : 'var(--dash)'};background:${d.bring[c.id] ? color : 'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">${d.bring[c.id] ? '✓' : ''}</span>${esc(c.name || 'Unnamed')}</button>`).join('')}</div>
@@ -850,10 +928,28 @@ function renderSheet() {
       ${edit ? `<button class="btn-line danger" data-a="bkDelete">Delete book</button>` : ''}`);
   } else if (UI.sheet === 'scope') {
     const row = (on, attrs, dot, title, sub) => `<button class="radio ${on ? 'on' : ''}" ${attrs}>${dot ? `<span style="width:14px;height:14px;border-radius:7px;background:${dot};flex-shrink:0"></span>` : `<span style="width:14px"></span>`}<span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(title)}</span>${sub ? `<span class="tiny muted">${esc(sub)}</span>` : ''}</span></button>`;
-    h = sheetFrame('Books', `<div class="stack g8">${row(UI.scope === 'all', 'data-a="scope" data-s="all"', '', 'All characters', 'Everyone, in every book')}
-      ${S.series.map(s => row(UI.scope === 'series:' + s.id, `data-a="scope" data-s="series:${s.id}"`, bookColor(seriesBooks(s.id)[0]), s.name, 'Series · ' + plural(seriesBooks(s.id).length, 'book', 'books'))).join('')}
-      ${S.books.filter(b => !b.series).map(b => row(UI.scope === 'book:' + b.id, `data-a="scope" data-s="book:${b.id}"`, bookColor(b), b.title, 'Standalone')).join('')}</div>
-      <button class="btn-dash" data-a="newBook">${I.plus} New book</button>`, 'Close');
+    const grp = shelf().map(g => {
+      const inner = g.series.map(s => row(UI.scope === 'series:' + s.id, `data-a="scope" data-s="series:${s.id}"`, bookColor(seriesBooks(s.id)[0]), s.name, 'Series · ' + plural(seriesBooks(s.id).length, 'book', 'books'))).join('')
+        + g.solos.map(b => row(UI.scope === 'book:' + b.id, `data-a="scope" data-s="book:${b.id}"`, bookColor(b), b.title, 'Standalone')).join('');
+      if (!g.world) return inner ? (S.worlds.length ? `<div class="label" style="margin-top:6px">Not in a world</div>` : '') + inner : '';
+      return `<button class="radio ${UI.scope === 'world:' + g.world.id ? 'on' : ''}" data-a="scope" data-s="world:${g.world.id}" style="margin-top:6px"><span style="color:var(--accent)">${I.globe}</span><span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(g.world.name)}</span><span class="tiny muted">World · everyone in it</span></span></button>
+        <div class="stack g8" style="padding-left:18px;border-left:2px solid var(--line);margin-left:10px">${inner || '<div class="tiny muted" style="padding:6px 0">No books in this world yet.</div>'}</div>`; }).join('');
+    h = sheetFrame('Books', `<div class="stack g8">${row(UI.scope === 'all', 'data-a="scope" data-s="all"', '', 'All characters', 'Everyone, in every book')}${grp}</div>
+      <div class="row g8"><button class="btn-dash grow" data-a="newBook">${I.plus} New book</button><button class="btn-dash grow" data-a="newWorld">${I.plus} New world</button></div>`, 'Close');
+  } else if (UI.sheet === 'series') {
+    const sr = seriesById(d.id);
+    h = sheetFrame('Edit series', `<label class="stack g6"><span class="label">Series name</span><input class="field card" style="padding:14px;font-size:18px;font-family:var(--serif)" data-f="sd" data-k="name" value="${esc(d.name)}" autofocus></label>
+      <div class="stack g8"><div class="label">Books</div><div class="card list-rows">${seriesBooks(sr.id).map((b, i, arr) => `<div class="srow"><span class="stack"><button class="btn-icon muted" style="height:22px;${i === 0 ? 'opacity:.3' : ''}" data-a="srMove" data-id="${b.id}" data-d="-1" aria-label="Earlier">${I.up}</button><button class="btn-icon muted" style="height:22px;${i === arr.length - 1 ? 'opacity:.3' : ''}" data-a="srMove" data-id="${b.id}" data-d="1" aria-label="Later">${I.dn}</button></span><span class="d" style="width:12px;height:12px;border-radius:6px;background:${bookColor(b)}"></span><span class="grow">${esc(bookFull(b))}</span></div>`).join('')}</div>
+      <div class="tiny muted">Use the arrows to change the order of the books.</div></div>
+      ${worldPickHTML(d, 'All books in this series live in this world.')}
+      <button class="btn-dark" data-a="srSave">Save</button>
+      <button class="btn-line danger" data-a="srDelete">Undo the series</button><div class="tiny muted" style="text-align:center;margin-top:-10px">The books stay, as standalones.</div>`);
+  } else if (UI.sheet === 'world') {
+    h = sheetFrame(d.id ? 'Edit world' : 'New world', `<label class="stack g6"><span class="label">Name of the world</span><input class="field card" style="padding:14px;font-size:18px;font-family:var(--serif)" data-f="sd" data-k="name" value="${esc(d.name)}" placeholder="e.g. The Shattered Realms" autofocus></label>
+      <div class="small muted" style="line-height:1.5">A world holds series and standalones that share one setting. Each series keeps its own characters, and characters can still cross over between books.</div>
+      ${S.series.length + soloBooks().length ? `<div class="stack g8"><div class="label">In this world</div><div class="card list-rows">${S.series.map(s2 => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0" data-a="wdToggle" data-k="series:${s2.id}">${check(d.items['series:' + s2.id])}<span class="grow">${esc(s2.name)} <span class="muted small">· series</span></span></button>`).join('')}${soloBooks().map(b => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0" data-a="wdToggle" data-k="book:${b.id}">${check(d.items['book:' + b.id])}<span class="grow">${esc(b.title)} <span class="muted small">· standalone</span></span></button>`).join('')}</div></div>` : ''}
+      <button class="btn-dark" data-a="wdSave">${d.id ? 'Save' : 'Create world'}</button>
+      ${d.id ? `<button class="btn-line danger" data-a="wdDelete">Delete world</button><div class="tiny muted" style="text-align:center;margin-top:-10px">Series and books stay; they're just not in a world any more.</div>` : ''}`);
   } else if (UI.sheet === 'addBlock') {
     h = sheetFrame(d.start ? 'New start block' : 'New block', `<label class="stack g6"><span class="label">Name it your way</span>
       <input class="field card" style="padding:14px;font-size:16px" data-f="sd" data-k="name" value="${esc(d.name)}" placeholder="${d.start ? 'e.g. What they want most' : 'e.g. Scars, Habits, Secrets'}" autofocus></label>
@@ -992,7 +1088,7 @@ const A = {
   sugNo: () => { const s = suggestion(); if (s) S.settings.declined.push(s.key); save(); render(); },
   newChar: () => {
     const bs = scopeBooks() || [];
-    openSheet('newChar', { name: '', pron: 'they', help: S.settings.helpDefault, books: bs.length === 1 ? [bs[0].id] : (UI.scope.startsWith('series:') ? [seriesBooks(UI.scope.slice(7)).slice(-1)[0]?.id].filter(Boolean) : bs.map(b => b.id)), image: null });
+    openSheet('newChar', { name: '', pron: 'they', help: S.settings.helpDefault, books: bs.length === 1 ? [bs[0].id] : (UI.scope.startsWith('series:') || (UI.scope.startsWith('world:') && UI.chip.startsWith('series:')) ? [bs.slice(-1)[0]?.id].filter(Boolean) : UI.scope.startsWith('world:') ? [] : bs.map(b => b.id)), image: null });
   },
   ncBook: e => { const d = UI.sd, id = e.dataset.id; d.books = d.books.includes(id) ? d.books.filter(x => x !== id) : [...d.books, id]; renderSheet(); },
   ncWhole: () => { const bs = seriesBooks(UI.scope.slice(7)); const d = UI.sd; d.books = bs.every(b => d.books.includes(b.id)) ? [] : bs.map(b => b.id); renderSheet(); },
@@ -1005,29 +1101,56 @@ const A = {
     if (d.linkFrom) S.links.push({ id: uid(), a: d.linkFrom, b: c.id, label: d.linkLabel || '' });
     closeSheet(); UI.charId = c.id; go('profile'); },
   newBook: () => { const ser = S.series.length ? 'add:' + S.series[S.series.length - 1].id : 'solo';
-    const kind = UI.scope.startsWith('series:') ? 'add:' + UI.scope.slice(7) : ser;
-    const d = { title: '', theme: Object.keys(THEMES)[S.books.length % 5], own: '', kind, seriesName: '', bring: {}, cover: null };
+    const kind = UI.scope.startsWith('series:') ? 'add:' + UI.scope.slice(7) : UI.scope.startsWith('world:') ? 'solo' : ser;
+    const d = { title: '', theme: Object.keys(THEMES)[S.books.length % 5], own: '', kind, seriesName: '', bring: {}, cover: null, world: UI.scope.startsWith('world:') ? UI.scope.slice(6) : '', newWorld: '' };
     if (kind.startsWith('add:')) S.chars.filter(c => c.books.some(id => (bookById(id) || {}).series === kind.slice(4))).forEach(c => d.bring[c.id] = true);
     openSheet('book', d); },
-  editBook: e => { const b = bookById(e.dataset.id); openSheet('book', { id: b.id, title: b.title, theme: b.theme, own: b.color || '', cover: b.cover || null }); },
+  editBook: e => { const b = bookById(e.dataset.id); openSheet('book', { id: b.id, title: b.title, theme: b.theme, own: b.color || '', cover: b.cover || null, kind: 'keep', seriesName: '', world: (b.series ? (seriesById(b.series) || {}).world : b.world) || '', newWorld: '', bring: {} }); },
+  editSeries: e => { const s = seriesById(e.dataset.id); openSheet('series', { id: s.id, name: s.name, world: s.world || '', newWorld: '' }); },
+  newWorld: () => openSheet('world', { name: '', items: {} }),
+  editWorld: e => { const w = worldById(e.dataset.id); const items = {}; S.series.forEach(s => { if (s.world === w.id) items['series:' + s.id] = true; }); soloBooks().forEach(b => { if (b.world === w.id) items['book:' + b.id] = true; }); openSheet('world', { id: w.id, name: w.name, items }); },
+  wpick: e => { UI.sd.world = e.dataset.w; renderSheet(); },
+  wdToggle: e => { UI.sd.items[e.dataset.k] = !UI.sd.items[e.dataset.k]; renderSheet(); },
+  wdSave: () => { const d = UI.sd; const name = (d.name || '').trim(); if (!name) { toast('Give the world a name'); return; }
+    let w = worldById(d.id); if (!w) { w = { id: uid(), name }; S.worlds.push(w); } else w.name = name;
+    S.series.forEach(s => { const on = !!d.items['series:' + s.id]; if (on) s.world = w.id; else if (s.world === w.id) s.world = null; });
+    soloBooks().forEach(b => { const on = !!d.items['book:' + b.id]; if (on) b.world = w.id; else if (b.world === w.id) b.world = null; });
+    closeSheet(); UI.scope = 'world:' + w.id; UI.chip = 'all'; if (!isWide()) UI.view = 'list'; save(); render(); },
+  wdDelete: () => { const w = worldById(UI.sd.id); if (!confirm(`Delete the world “${w.name}”? Its series and books stay.`)) return;
+    S.series.forEach(s => { if (s.world === w.id) s.world = null; }); S.books.forEach(b => { if (b.world === w.id) b.world = null; });
+    S.worlds = S.worlds.filter(x => x !== w); closeSheet(); save(); render(); },
+  srMove: e => { const b = bookById(e.dataset.id); const bs = seriesBooks(b.series); const i = bs.indexOf(b), j = i + +e.dataset.d; if (j < 0 || j >= bs.length) return;
+    [bs[i].part, bs[j].part] = [bs[j].part, bs[i].part]; save(); renderSheet(); render(); },
+  srSave: () => { const d = UI.sd; const s = seriesById(d.id); s.name = (d.name || '').trim() || s.name; s.world = resolveWorld(d); closeSheet(); save(); render(); },
+  srDelete: () => { const s = seriesById(UI.sd.id); if (!confirm(`Undo the series “${s.name}”? Its books become standalones.`)) return;
+    seriesBooks(s.id).forEach(b => { b.series = null; b.world = s.world || null; }); S.series = S.series.filter(x => x !== s);
+    if (UI.scope === 'series:' + s.id) { UI.scope = 'all'; UI.chip = 'all'; } closeSheet(); save(); render(); },
   bkKind: e => { const d = UI.sd; d.kind = e.dataset.k; d.bring = {};
     if (d.kind.startsWith('add:')) S.chars.filter(c => c.books.some(id => (bookById(id) || {}).series === d.kind.slice(4))).forEach(c => d.bring[c.id] = true); renderSheet(); },
   bkBring: e => { UI.sd.bring[e.dataset.id] = !UI.sd.bring[e.dataset.id]; renderSheet(); },
   bkTheme: e => { UI.sd.theme = e.dataset.t; UI.sd.own = ''; renderSheet(); },
   bkCover: async () => { const im = await pickImage(); if (im) { UI.sd.cover = im; renderSheet(); } },
   bkSave: () => { const d = UI.sd; const title = (d.title || '').trim() || 'Untitled';
-    if (d.id) { const b = bookById(d.id); Object.assign(b, { title, theme: d.theme, color: d.own || null, cover: d.cover }); closeSheet(); save(); render(); return; }
-    let series = null, part = 1;
-    if (d.kind === 'new') { const s = { id: uid(), name: (d.seriesName || '').trim() || title }; S.series.push(s); series = s.id; }
+    if (d.id) { const b = bookById(d.id); Object.assign(b, { title, theme: d.theme, color: d.own || null, cover: d.cover });
+      const old = b.series; let msg = '';
+      if (d.kind === 'keep') { if (!old) b.world = resolveWorld(d); }
+      else if (d.kind === 'new') { const s = { id: uid(), name: (d.seriesName || '').trim() || title, world: resolveWorld(d) }; S.series.push(s); b.series = s.id; b.part = 1; b.world = null; msg = title + ' is now Book 1 of ' + s.name; UI.scope = 'series:' + s.id; UI.chip = 'all'; }
+      else if (d.kind.startsWith('add:')) { const sid = d.kind.slice(4); b.part = seriesBooks(sid).length + 1; b.series = sid; b.world = null; msg = title + ' is now Book ' + b.part + ' of ' + seriesById(sid).name; UI.scope = 'series:' + sid; UI.chip = 'all'; }
+      else if (d.kind === 'solo') { b.series = null; b.part = 1; b.world = resolveWorld(d); msg = title + ' is now a standalone'; UI.scope = 'book:' + b.id; UI.chip = 'all'; }
+      if (old && old !== b.series) { renumber(old); if (!seriesBooks(old).length) S.series = S.series.filter(s => s.id !== old); }
+      closeSheet(); save(); render(); if (msg) toast(msg); return; }
+    let series = null, part = 1, bw = null;
+    if (d.kind === 'new') { const s = { id: uid(), name: (d.seriesName || '').trim() || title, world: resolveWorld(d) }; S.series.push(s); series = s.id; }
     else if (d.kind.startsWith('add:')) { series = d.kind.slice(4); part = seriesBooks(series).length + 1; }
-    const b = { id: uid(), title, series, part, theme: d.theme, color: d.own || null, cover: d.cover, created: now() };
+    else bw = resolveWorld(d);
+    const b = { id: uid(), title, series, part, world: bw, theme: d.theme, color: d.own || null, cover: d.cover, created: now() };
     S.books.push(b);
     for (const cid in d.bring) if (d.bring[cid]) { const c = charById(cid); if (c && !c.books.includes(b.id)) c.books.push(b.id); }
     UI.scope = series ? 'series:' + series : 'book:' + b.id; UI.chip = series ? b.id : 'all';
     closeSheet(); if (!isWide()) UI.view = 'list'; save(); render(); toast(title + ' is ready'); },
   bkDelete: () => { const b = bookById(UI.sd.id); if (!confirm(`Delete “${b.title}”? Characters stay, they just won't be in this book any more.`)) return;
     S.books = S.books.filter(x => x !== b); S.chars.forEach(c => { c.books = c.books.filter(id => id !== b.id); c.hist = c.hist.filter(h => h.book !== b.id); });
-    if (b.series) { const rest = seriesBooks(b.series); rest.forEach((x, i) => x.part = i + 1); if (!rest.length) S.series = S.series.filter(s => s.id !== b.series); }
+    if (b.series) { renumber(b.series); if (!seriesBooks(b.series).length) S.series = S.series.filter(s => s.id !== b.series); }
     closeSheet(); save(); render(); },
   closeSheet: () => closeSheet(),
   sheetBg: (e, ev) => { if (ev.target === e) closeSheet(); },

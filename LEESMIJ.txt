@@ -1,4 +1,4 @@
-UNFURL — versie 2026-11-16c
+UNFURL — versie 2026-11-16d
 ===========================
 
 Wat zit erin
@@ -51,6 +51,11 @@ WAT ZIT ER IN DEZE EERSTE VERSIE
   een nieuw personage moet worden.
 - Boeken en series, elk boek met een eigen kleurthema. Bij een nieuw deel neem
   je personages mee.
+- Werelden: zet series en losse boeken samen in een wereld. Kies je de wereld,
+  dan zie je iedereen erin; met de knoppen bovenaan kijk je per serie of boek.
+- Een los boek omzetten naar een serie (of naar een bestaande serie), en een
+  boek uit een serie halen: via "Edit book". Volgorde van een serie aanpassen
+  en een serie in een wereld zetten: via "Edit series".
 - Groei per boek: wat je verandert terwijl je in een boek werkt, wordt voor dat
   boek bewaard. Kies bovenaan de lijst het boek waarin je werkt.
 - Verbanden in je eigen woorden, plus een overzichtskaart.
