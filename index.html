@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F3F8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Unfurl">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>Unfurl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F3F8;--card:#FFFFFF;--line:#E3DEEA;--line2:#EFEBF3;--ink:#241B33;--muted:#6B6477;--faint:#857E90;--dash:#B9B0C4;--soft:#4A4256;--accent:#7A4E8C;--on-accent:#FFFFFF;--tint:#7A4E8C1F;--btn:#241B33;--on-btn:#FFFFFF;--track:#CFC9D8;--serif:'Fraunces',Georgia,serif;--sans:'DM Sans',system-ui,-apple-system,sans-serif}
+.dark{--bg:#17131F;--card:#221C2D;--line:#352D42;--line2:#2E2739;--ink:#EDE8F3;--muted:#A69EB3;--faint:#8F879C;--dash:#5A5068;--soft:#C9C1D6;--btn:#EDE8F3;--on-btn:#17131F;--track:#4A4258}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font-family:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+h1,h2,h3{margin:0;font-family:var(--serif);font-weight:500;letter-spacing:-.01em}
+.h1{font-size:30px}.h2{font-size:20px}
+.muted{color:var(--muted)}.small{font-size:13px}.tiny{font-size:12px}
+.stack{display:flex;flex-direction:column}.row{display:flex;align-items:center}
+.g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}.g14{gap:14px}.g18{gap:18px}.g22{gap:22px}
+.between{justify-content:space-between}.wrap{flex-wrap:wrap}.grow{flex:1;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px}
+.pad{padding:16px}
+.label{font-size:12px;font-weight:600;color:var(--muted)}
+.btn-round{width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.btn-pill{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--line);background:var(--card);display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:500}
+.btn-dark{min-height:56px;border-radius:18px;border:none;background:var(--btn);color:var(--on-btn);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn-accent{min-height:44px;border-radius:14px;border:none;background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:600;padding:0 16px}
+.btn-line{min-height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:500;padding:0 14px}
+.btn-dash{min-height:52px;border-radius:18px;border:1.5px dashed var(--dash);background:transparent;font-size:14px;font-weight:500;color:var(--soft);display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn-text{border:none;background:transparent;color:var(--accent);font-size:14px;font-weight:500;min-height:44px;padding:0 4px;display:inline-flex;align-items:center;gap:6px}
+.btn-icon{width:34px;height:34px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;border-radius:17px;padding:0;flex-shrink:0}
+.btn-icon:hover,.btn-round:hover{background:var(--line2)}
+.chip{min-height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:var(--card);font-size:14px;white-space:nowrap}
+.chip.on{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.chips::-webkit-scrollbar{display:none}
+.tog{width:40px;height:24px;border-radius:12px;background:var(--track);display:inline-flex;align-items:center;padding:3px;flex-shrink:0;transition:background .2s}
+.tog>span{width:18px;height:18px;border-radius:9px;background:#fff;transition:transform .2s}
+.tog.on{background:var(--accent)}.tog.on>span{transform:translateX(16px)}
+.seg{display:flex;padding:4px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.seg button{flex:1;min-height:40px;border:none;border-radius:10px;background:transparent;font-size:14px;font-weight:500}
+.seg button.on{background:var(--btn);color:var(--on-btn)}
+.mini-seg{display:flex;padding:3px;border-radius:10px;background:var(--bg)}
+.mini-seg button{min-height:30px;padding:0 10px;border:none;border-radius:8px;background:transparent;font-size:12px;font-weight:600;color:var(--muted)}
+.mini-seg button.on{background:var(--card);color:var(--ink)}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);flex-shrink:0;overflow:hidden;background-size:cover;background-position:center}
+.av0{background-color:#EBDDF0;color:#5A3768}.av1{background-color:#E2E6F2;color:#34406A}.av2{background-color:#F3E0E4;color:#7A3346}.av3{background-color:#E3EEE6;color:#2F5A3C}.av4{background-color:#EFEAE0;color:#5E4E2E}.av5{background-color:#E0ECEF;color:#2E5560}
+.dark .av0{background-color:#3A2A45;color:#E3C9EE}.dark .av1{background-color:#2B3250;color:#C8D1F0}.dark .av2{background-color:#4A2A33;color:#F2C6D1}.dark .av3{background-color:#24382A;color:#C6E3CF}.dark .av4{background-color:#3B3426;color:#E8D9B8}.dark .av5{background-color:#22363B;color:#C2E0E6}
+.field{border:none;outline:none;background:transparent;font-size:15px;line-height:1.5;padding:0;width:100%;min-width:0}
+textarea.field{resize:none;min-height:46px;display:block;overflow:hidden}
+.screen{max-width:600px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 20px calc(130px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+.screen.nonav{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
+.charcard{display:flex;gap:14px;align-items:center;padding:14px;border-radius:18px;background:var(--card);border:1px solid var(--line);text-align:left;width:100%}
+.charcard.sel{border:2px solid var(--accent);padding:13px}
+.ellip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fab{position:fixed;right:max(20px,calc(50% - 280px));bottom:calc(104px + env(safe-area-inset-bottom));min-height:56px;padding:0 22px 0 18px;border-radius:28px;border:none;background:var(--btn);color:var(--on-btn);font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 8px 20px rgba(36,27,51,.18);z-index:5}
+.bottomnav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:6}
+.bottomnav button{border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px;font-size:12px;color:var(--muted)}
+.bottomnav button.on{color:var(--accent);font-weight:600}
+.block{padding:16px;display:flex;flex-direction:column;gap:8px}
+.block-title{font-size:13px;font-weight:600;color:var(--accent)}
+.lrow{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line2);align-items:center}
+.lrow .lab{width:92px;flex-shrink:0;font-size:13px;color:var(--muted);border:none;background:transparent;outline:none;padding:0}
+.frow{display:flex;gap:8px;align-items:baseline;font-size:14px;width:100%;text-align:left;border:none;background:transparent;padding:2px 0}
+.frow .lab{width:56px;color:var(--muted);font-size:12px;flex-shrink:0}
+.notecard{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.suggest{padding:16px;border-radius:18px;background:var(--tint);display:flex;flex-direction:column;gap:12px}
+.imgs{display:flex;gap:8px}
+.imgs .im{flex:1;height:96px;border-radius:14px;background-size:cover;background-position:center;border:none;padding:0;max-width:25%}
+.imgs .add{flex:1;height:96px;border-radius:14px;border:1.5px dashed var(--dash);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--muted);max-width:25%}
+.jot{display:flex;gap:8px;align-items:center;padding:6px 6px 6px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.jot input{flex:1;border:none;outline:none;background:transparent;font-size:15px;min-height:40px;min-width:0}
+.jot .go{width:40px;height:40px;border-radius:12px;border:none;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.linkchip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 6px;border-radius:22px;background:var(--card);border:1px solid var(--line);font-size:14px}
+.growbtn{display:flex;align-items:center;justify-content:space-between;min-height:60px;padding:0 18px;border-radius:18px;background:var(--btn);color:var(--on-btn);border:none;width:100%;text-align:left}
+.tl{display:flex;gap:14px}
+.tl .rail{display:flex;flex-direction:column;align-items:center;width:24px;flex-shrink:0}
+.tl .dot{width:14px;height:14px;border-radius:7px;background:var(--accent);margin-top:3px}
+.tl .dot.empty{background:transparent;border:2px solid var(--dash)}
+.tl .bar{width:2px;flex:1;background:var(--line)}
+.strike{text-decoration:line-through;color:var(--muted)}
+.list-rows{padding:0 16px}
+.list-rows>*{border-top:1px solid var(--line2)}.list-rows>*:first-child{border-top:none}
+.srow{display:flex;align-items:center;gap:10px;min-height:54px}
+.side,.listcol{display:none}
+.sheet-wrap{position:fixed;inset:0;background:rgba(23,19,31,.42);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .18s}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:16px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px;animation:up .22s}
+.grabber{width:40px;height:5px;border-radius:3px;background:var(--dash);align-self:center;opacity:.7}
+@keyframes fade{from{opacity:0}}@keyframes up{from{transform:translateY(30px);opacity:.5}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));background:var(--btn);color:var(--on-btn);padding:12px 18px;border-radius:14px;font-size:14px;z-index:80;max-width:90vw;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.radio{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 16px;border-radius:16px;border:1px solid var(--line);background:var(--card);text-align:left;width:100%}
+.radio.on{border:2px solid var(--accent);padding:9px 15px}
+.radio .ring{width:20px;height:20px;border-radius:10px;border:2px solid var(--dash);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.radio.on .ring{border-color:var(--accent)}.radio.on .ring::after{content:'';width:10px;height:10px;border-radius:5px;background:var(--accent)}
+.swatch{display:flex;flex-direction:column;align-items:center;gap:6px;border:none;background:transparent;font-size:12px;padding:0;width:56px}
+.swatch span{width:48px;height:48px;border-radius:24px;display:block}
+.swatch.on span{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--accent)}
+.lightbox{position:fixed;inset:0;background:rgba(10,8,14,.92);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
+.lightbox img{max-width:100%;max-height:78vh;border-radius:12px}
+.danger{color:#B23A48}
+.dark .danger{color:#F09AA6}
+.empty-hint{padding:14px;border-radius:16px;border:1.5px dashed var(--dash);font-size:14px;color:var(--muted);line-height:1.45}
+svg{flex-shrink:0}
+@media (min-width:980px){
+  #app{display:grid;grid-template-columns:250px 330px minmax(0,1fr);height:100vh;overflow:hidden}
+  .side{display:flex;flex-direction:column;gap:22px;padding:28px 18px;background:var(--card);border-right:1px solid var(--line);overflow:auto}
+  .listcol{display:block;border-right:1px solid var(--line);overflow:auto}
+  .mainpane{overflow:auto;height:100vh}
+  .bottomnav,.fab,.mobile-only{display:none!important}
+  .screen{max-width:none;padding:28px 36px 60px}
+  .listcol .screen{padding:28px 18px 40px}
+  .blocks{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:start}
+  .sheet-wrap{align-items:center}
+  .sheet{border-radius:26px;max-height:88vh}
+  .toast{bottom:40px}
+  .narrow{max-width:640px}
+  .imgs .im,.imgs .add{flex:0 0 140px;max-width:140px;height:110px}
+}
+.wide-only{display:none}
+@media (min-width:980px){.wide-only{display:flex}}
+.sidelink{white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:10px;min-height:40px;padding:0 8px;border-radius:10px;font-size:14px;border:none;background:transparent;width:100%;text-align:left}
+.sidelink.on{background:var(--tint);font-weight:600}
+.sidelink .d{width:10px;height:10px;border-radius:5px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sheet"></div>
+<input type="file" id="filepick" accept="image/*" hidden>
+<input type="file" id="importpick" accept="application/json,.json" hidden>
+<script>
+'use strict';
+const VERSION = '2026-11-16c';
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const norm = s => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+const isWide = () => matchMedia('(min-width:980px)').matches;
+const now = () => Date.now();
+function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+function ago(t) {
+  const d = Math.floor((now() - t) / 86400000);
+  if (d <= 0) return 'today'; if (d === 1) return 'yesterday'; if (d < 7) return d + ' days ago';
+  return new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+function mix(hex, other, amt) {
+  const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const a = p(hex), b = p(other);
+  return '#' + a.map((v, i) => Math.round(v + (b[i] - v) * amt).toString(16).padStart(2, '0')).join('');
+}
+
+const I = {
+  back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  next: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  down: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  up: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+  dn: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  x: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  pen: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  arrow: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  q: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg>',
+  pin: on => `<svg width="16" height="16" viewBox="0 0 24 24" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/><path d="M12 14v7" fill="none"/></svg>`,
+  sliders: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+  people: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14.5c2.4 0 4 1.5 4.5 4"/></svg>',
+  note: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h4"/></svg>',
+  gear: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>',
+  web: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="6" r="2.5"/><circle cx="5" cy="17" r="2.5"/><circle cx="19" cy="17" r="2.5"/><path d="M11 8.3L6.3 15M13 8.3l4.7 6.7M7.5 17h9"/></svg>',
+  image: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>',
+  spark: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>',
+  book: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>',
+  cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1-.6-8A6 6 0 0 1 18 9a3.5 3.5 0 0 1 0 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/></svg>'
+};
+const tog = on => `<span class="tog ${on ? 'on' : ''}"><span></span></span>`;
+
+/* ---------- pronouns & templates ---------- */
+const PRON = {
+  she:  { they: 'she', them: 'her', their: 'her', s: 's', es: 'es', ies: 'ies', has: "'s", are: 'is', have: 'has' },
+  he:   { they: 'he', them: 'him', their: 'his', s: 's', es: 'es', ies: 'ies', has: "'s", are: 'is', have: 'has' },
+  they: { they: 'they', them: 'them', their: 'their', s: '', es: '', ies: 'y', has: "'ve", are: 'are', have: 'have' }
+};
+function fill(t, p) { const f = PRON[p] || PRON.they; return String(t || '').replace(/\{(\w+)\}/g, (m, k) => f[k] ?? m); }
+function toTpl(text) {
+  let t = String(text || '');
+  t = t.replace(/\bthey've\b/g, '{they}{has}').replace(/\bthey're\b/g, '{they} {are}');
+  t = t.replace(/\bthey\b/g, '{they}').replace(/\bthem\b/g, '{them}').replace(/\btheir\b/g, '{their}');
+  t = t.replace(/(\b[A-Za-z']+\s+)?\{they\} ([A-Za-z]+)/g, (m, prev, w) => {
+    const lw = w.toLowerCase(); prev = prev || '';
+    if (['did','does','do','would','will','can','could','should','might','must','may','shall',"don't","didn't","won't","can't","doesn't"].includes(prev.trim().toLowerCase())) return m;
+    if (lw === 'are') return prev + '{they} {are}';
+    if (lw === 'have') return prev + '{they} {have}';
+    if (['were','had','will','would','can','could','might','should','must','did','may','shall','still','never','always','often','once','used'].includes(lw) || /s$/.test(lw)) return m;
+    if (/(o|sh|ch|x|z)$/.test(lw)) return prev + '{they} ' + w + '{es}';
+    if (/[^aeiou]y$/.test(lw)) return prev + '{they} ' + w.slice(0, -1) + '{ies}';
+    return prev + '{they} ' + w + '{s}';
+  });
+  return t;
+}
+const LINE_HINTS = {
+  eyes: 'What colour? Do they change with {their} mood?',
+  hair: 'Colour, length, how {they} wear{s} it',
+  face: 'What do people notice first?',
+  skin: 'Tone, freckles, how it reacts to sun or cold',
+  build: 'Height, shape, how {they} move{s}',
+  marks: 'Scars, tattoos, birthmarks',
+  voice: 'Low, rough, soft, fast…?'
+};
+
+/* ---------- state ---------- */
+function defaultState() {
+  return {
+    v: 1,
+    settings: {
+      dark: false, helpDefault: false, declined: [], lastBackup: null, dropboxKey: '',
+      startBlocks: [
+        { id: 'sb_looks', tpl: 'Looks', type: 'list', lines: [
+          { label: 'Eyes', pin: true }, { label: 'Hair', pin: true }, { label: 'Face', pin: false },
+          { label: 'Skin', pin: false }, { label: 'Build', pin: true }, { label: 'Marks', pin: true }, { label: 'Voice', pin: false } ] },
+        { id: 'sb_from', tpl: 'Where {they} come{s} from', type: 'text', lines: [] },
+        { id: 'sb_through', tpl: 'What {they}{has} been through', type: 'text', lines: [] },
+        { id: 'sb_who', tpl: 'Who {they} {are}', type: 'text', lines: [] }
+      ],
+      questions: [
+        { id: 'q_looks', sid: 'sb_looks', text: 'What do people notice first about {them}?', on: true },
+        { id: 'q_from', sid: 'sb_from', text: 'Where did {they} grow up, and what did it feel like there?', on: true },
+        { id: 'q_through', sid: 'sb_through', text: 'What happened to {them} that still stays with {them}?', on: true },
+        { id: 'q_who', sid: 'sb_who', text: 'How would {their} best friend describe {them}? And {their} worst enemy?', on: true }
+      ]
+    },
+    series: [], books: [], chars: [], notes: [], links: []
+  };
+}
+function normalize(s) {
+  const d = defaultState();
+  s = s && typeof s === 'object' ? s : d;
+  s.settings = Object.assign({}, d.settings, s.settings || {});
+  for (const k of ['series', 'books', 'chars', 'notes', 'links']) if (!Array.isArray(s[k])) s[k] = [];
+  for (const c of s.chars) {
+    c.books = c.books || []; c.images = c.images || []; c.blocks = c.blocks || []; c.hist = c.hist || [];
+    c.pron = c.pron || 'they'; if (c.hue == null) c.hue = 0;
+    for (const b of c.blocks) { b.lines = b.lines || []; if (!b.type) b.type = 'text'; if (b.text == null) b.text = ''; }
+  }
+  return s;
+}
+let S = defaultState();
+let UI = { view: 'list', charId: null, scope: 'all', chip: 'all', q: '', searching: false, ask: {}, open: {}, rename: null, sheet: null, sd: {}, connFocus: null, connFilter: 'All', noteFor: '', namePrompt: null, sbOpen: null };
+try { Object.assign(UI, JSON.parse(localStorage.getItem('unfurl_ui') || '{}'), { sheet: null, sd: {}, rename: null, namePrompt: null }); } catch (e) {}
+
+/* ---------- storage (IndexedDB, falls back to localStorage) ---------- */
+const store = {
+  db: null,
+  open() { return new Promise(res => {
+    try { const r = indexedDB.open('unfurl', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { this.db = r.result; res(); }; r.onerror = () => res();
+    } catch (e) { res(); } }); },
+  get(k) { return new Promise(res => {
+    if (!this.db) { try { res(JSON.parse(localStorage.getItem('unfurl_' + k))); } catch (e) { res(null); } return; }
+    const t = this.db.transaction('kv').objectStore('kv').get(k); t.onsuccess = () => res(t.result); t.onerror = () => res(null); }); },
+  set(k, v) { return new Promise(res => {
+    if (!this.db) { try { localStorage.setItem('unfurl_' + k, JSON.stringify(v)); } catch (e) { toast('Could not save — storage is full'); } res(); return; }
+    const tx = this.db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = res; tx.onerror = () => { toast('Could not save'); res(); }; }); }
+};
+let saveTimer = null;
+function save(soon) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => store.set('state', JSON.parse(JSON.stringify(S))), soon ? 0 : 400);
+  try { const { view, charId, scope, chip, connFocus } = UI; localStorage.setItem('unfurl_ui', JSON.stringify({ view, charId, scope, chip, connFocus })); } catch (e) {}
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) save(true); });
+
+/* ---------- lookups ---------- */
+const charById = id => S.chars.find(c => c.id === id);
+const bookById = id => S.books.find(b => b.id === id);
+const seriesById = id => S.series.find(s => s.id === id);
+function seriesBooks(sid) { return S.books.filter(b => b.series === sid).sort((a, b) => a.part - b.part); }
+function bookName(b) { if (!b) return ''; const s = seriesById(b.series); return s ? 'Book ' + b.part : b.title; }
+function bookFull(b) { if (!b) return ''; const s = seriesById(b.series); return s ? 'Book ' + b.part + ' · ' + b.title : b.title; }
+const THEMES = { Ember: '#9C3D2E', Tide: '#2F5F86', Moss: '#4A6B3F', Plum: '#7A4E8C', Night: '#2B2F4A' };
+function bookColor(b) { return (b && (b.color || THEMES[b.theme])) || '#7A4E8C'; }
+function validScope() {
+  if (UI.scope.startsWith('series:') && !seriesById(UI.scope.slice(7))) UI.scope = 'all';
+  if (UI.scope.startsWith('book:') && !bookById(UI.scope.slice(5))) UI.scope = 'all';
+  if (UI.chip !== 'all' && !bookById(UI.chip)) UI.chip = 'all';
+}
+function scopeBooks() {
+  const sc = UI.scope;
+  if (sc.startsWith('series:')) { const bs = seriesBooks(sc.slice(7)); return UI.chip === 'all' ? bs : bs.filter(b => b.id === UI.chip); }
+  if (sc.startsWith('book:')) return S.books.filter(b => b.id === sc.slice(5));
+  return null;
+}
+function scopeColor() {
+  const bs = scopeBooks();
+  if (!bs || !bs.length) return '#7A4E8C';
+  return bookColor(bs[bs.length === 1 ? 0 : 0]);
+}
+function scopeTitle() {
+  const sc = UI.scope;
+  if (sc.startsWith('series:')) { const s = seriesById(sc.slice(7)); return { kicker: 'Series · ' + plural(seriesBooks(s.id).length, 'book', 'books'), title: s.name }; }
+  if (sc.startsWith('book:')) return { kicker: 'Standalone', title: bookById(sc.slice(5)).title };
+  return { kicker: S.books.length ? 'Everything' : 'No books yet', title: 'All characters' };
+}
+function charsInScope() {
+  const bs = scopeBooks();
+  let list = S.chars.slice();
+  if (bs) { const ids = new Set(bs.map(b => b.id)); list = list.filter(c => c.books.some(i => ids.has(i))); }
+  if (UI.q) list = list.filter(c => norm(c.name).includes(norm(UI.q)));
+  return list.sort((a, b) => a.created - b.created);
+}
+function charBooks(c) { return S.books.filter(b => c.books.includes(b.id)).sort((a, b) => (a.series || '').localeCompare(b.series || '') || a.part - b.part || a.created - b.created); }
+function currentBookFor(c) {
+  const own = charBooks(c); if (!own.length) return null;
+  const bs = scopeBooks();
+  if (bs) { const inScope = own.filter(b => bs.some(x => x.id === b.id)); if (inScope.length) return inScope[inScope.length - 1].id; }
+  return own.sort((a, b) => a.part - b.part || a.created - b.created)[own.length - 1].id;
+}
+function charBooksLabel(c) {
+  const own = charBooks(c); if (!own.length) return 'No book yet';
+  const out = []; const bySeries = {};
+  for (const b of own) { if (b.series && seriesById(b.series)) (bySeries[b.series] = bySeries[b.series] || []).push(b.part); else out.push(b.title); }
+  for (const sid in bySeries) {
+    const p = bySeries[sid].sort((a, b) => a - b);
+    const contiguous = p.every((v, i) => i === 0 || v === p[i - 1] + 1);
+    const r = p.length === 1 ? 'Book ' + p[0] : contiguous ? 'Book ' + p[0] + '–' + p[p.length - 1] : 'Book ' + p.join(', ');
+    out.unshift(seriesById(sid).name + ' · ' + r);
+  }
+  return out.join(' · ');
+}
+function blockFilled(b) { return b.type === 'list' ? b.lines.some(l => (l.value || '').trim()) : !!(b.text || '').trim(); }
+function snippet(c) {
+  const n = S.notes.filter(n => n.charId === c.id).sort((a, b) => b.at - a.at)[0];
+  if (n) return n.text;
+  for (const b of c.blocks) {
+    if (b.type === 'text' && b.text.trim()) return b.text.trim().split('\n')[0];
+    if (b.type === 'list') { const l = b.lines.find(l => (l.value || '').trim()); if (l) return l.label + ': ' + l.value; }
+  }
+  return 'Only a name so far';
+}
+function avatar(c, size) {
+  const img = c.images[0];
+  const fs = Math.round(size * 0.4);
+  const letter = esc((c.name || '?').trim().charAt(0).toUpperCase() || '?');
+  return img ? `<span class="av av${c.hue % 6}" style="width:${size}px;height:${size}px;background-image:url('${img.data}')"></span>`
+             : `<span class="av av${c.hue % 6}" style="width:${size}px;height:${size}px;font-size:${fs}px">${letter}</span>`;
+}
+
+/* ---------- characters & blocks ---------- */
+function blockFromStart(sb, pron) {
+  return { id: uid(), sid: sb.id, tpl: sb.tpl, name: fill(sb.tpl, pron), type: sb.type, text: '',
+    lines: (sb.lines || []).map(l => ({ id: uid(), label: l.label, value: '', pin: !!l.pin })) };
+}
+function createChar({ name, pron, books, help, image }) {
+  const c = { id: uid(), name: (name || '').trim(), pron: pron || 'they', books: books || [], help: !!help,
+    images: image ? [{ id: uid(), data: image }] : [], hue: S.chars.length % 6, created: now(), updated: now(), hist: [],
+    blocks: S.settings.startBlocks.map(sb => blockFromStart(sb, pron || 'they')) };
+  S.chars.push(c); save(); return c;
+}
+function setPron(c, p) {
+  c.pron = p;
+  for (const b of c.blocks) if (b.tpl) b.name = fill(b.tpl, p);
+}
+function questionFor(c, b) {
+  const qs = S.settings.questions.filter(q => q.on);
+  let q = b.sid ? qs.find(q => q.sid === b.sid) : null;
+  if (!q) q = qs.find(q => !q.sid && norm(fill(toTpl(q.block), c.pron)) === norm(b.name));
+  return q ? fill(q.text, c.pron) : '';
+}
+function logChange(c, b, line, from, to) {
+  from = from || ''; to = to || '';
+  if (from === to) return;
+  c.updated = now();
+  const book = currentBookFor(c); if (!book) return;
+  const k = b.id + '|' + (line ? line.id : '');
+  const e = c.hist.find(h => h.book === book && h.k === k);
+  if (e) { e.to = to; e.at = now(); e.bname = b.name; e.line = line ? line.label : null;
+    if (e.from === e.to) c.hist = c.hist.filter(x => x !== e); }
+  else c.hist.push({ id: uid(), book, k, bname: b.name, line: line ? line.label : null, from, to, at: now() });
+}
+
+/* ---------- suggestions (learning, always asks first) ---------- */
+function suggestion() {
+  const st = S.settings, dec = new Set(st.declined);
+  const startNames = new Set(st.startBlocks.map(sb => norm(fill(sb.tpl, 'they'))));
+  const counts = {};
+  for (const c of S.chars) {
+    const seen = new Set();
+    for (const b of c.blocks) {
+      if (b.sid) continue;
+      const n = norm(b.name); if (!n || seen.has(n)) continue; seen.add(n);
+      (counts[n] = counts[n] || { name: b.name, n: 0, type: {} }).n++;
+      counts[n].type[b.type] = (counts[n].type[b.type] || 0) + 1;
+    }
+  }
+  for (const n in counts) {
+    const o = counts[n];
+    if (o.n >= 3 && !startNames.has(n) && !dec.has('add:' + n)) {
+      const type = (o.type.list || 0) > (o.type.text || 0) ? 'list' : 'text';
+      return { key: 'add:' + n, html: `You added <b>${esc(o.name)}</b> to ${o.n === 3 ? 'three' : o.n} characters. Make it a standard block for new characters?`,
+        yes: () => { st.startBlocks.push({ id: 'sb_' + uid(), tpl: toTpl(o.name), type, lines: [] }); toast(o.name + ' is now a start block'); } };
+    }
+  }
+  const looks = st.startBlocks.find(sb => sb.type === 'list');
+  if (looks) {
+    const lc = {};
+    for (const c of S.chars) { const b = c.blocks.find(b => b.sid === looks.id); if (!b) continue;
+      const have = new Set((looks.lines || []).map(l => norm(l.label)));
+      for (const l of b.lines) { const n = norm(l.label); if (n && !have.has(n) && (l.value || '').trim()) (lc[n] = lc[n] || { label: l.label, n: 0 }).n++; } }
+    for (const n in lc) if (lc[n].n >= 3 && !dec.has('line:' + n)) {
+      return { key: 'line:' + n, html: `You added the line <b>${esc(lc[n].label)}</b> to ${lc[n].n} characters. Add it to <b>${esc(fill(looks.tpl, 'they'))}</b> for new characters?`,
+        yes: () => { looks.lines.push({ label: lc[n].label, pin: false }); toast('Added to ' + fill(looks.tpl, 'they')); } };
+    }
+  }
+  for (const sb of st.startBlocks) {
+    const withIt = S.chars.filter(c => c.blocks.some(b => b.sid === sb.id) && now() - c.created > 3 * 86400000);
+    if (withIt.length >= 5 && !withIt.some(c => blockFilled(c.blocks.find(b => b.sid === sb.id))) && !dec.has('drop:' + sb.id)) {
+      return { key: 'drop:' + sb.id, html: `You've left <b>${esc(fill(sb.tpl, 'they'))}</b> empty for ${withIt.length} characters. Leave it out for new characters?`,
+        yes: () => { st.startBlocks = st.startBlocks.filter(x => x !== sb); toast('Taken out of your start blocks'); } };
+    }
+  }
+  return null;
+}
+function suggestionHTML() {
+  const s = suggestion(); if (!s) return '';
+  return `<div class="suggest"><div class="row g10" style="align-items:flex-start"><span style="color:var(--accent);margin-top:1px">${I.spark}</span>
+    <div style="font-size:15px;line-height:1.45">${s.html}</div></div>
+    <div class="row g8"><button class="btn-accent grow" data-a="sugYes">Yes, please</button><button class="btn-line grow" data-a="sugNo">No thanks</button></div></div>`;
+}
+
+/* ---------- rendering ---------- */
+function applyTheme() {
+  const dark = !!S.settings.dark;
+  let c = scopeColor();
+  const view = UI.view;
+  if (['profile', 'growth', 'charsettings', 'connections'].includes(view) && charById(UI.charId)) {
+    const ch = charById(UI.charId); const bid = currentBookFor(ch); if (bid && !scopeBooks()) c = bookColor(bookById(bid));
+  }
+  if (dark) c = mix(c, '#ffffff', 0.45);
+  const r = document.documentElement;
+  r.classList.toggle('dark', dark);
+  r.style.setProperty('--accent', c);
+  r.style.setProperty('--tint', c + (dark ? '2E' : '1F'));
+  r.style.setProperty('--on-accent', dark ? '#17131F' : '#FFFFFF');
+  document.querySelector('meta[name=theme-color]').content = dark ? '#17131F' : '#F5F3F8';
+}
+
+function render() {
+  validScope();
+  if (UI.charId && !charById(UI.charId)) UI.charId = null;
+  if (['profile', 'growth', 'charsettings'].includes(UI.view) && !UI.charId) UI.view = 'list';
+  applyTheme();
+  const wide = isWide();
+  const app = $('#app');
+  const keep = {};
+  app.querySelectorAll('[data-scroll]').forEach(el => keep[el.dataset.scroll] = el.scrollTop);
+  const wy = window.scrollY;
+  if (wide) {
+    let mainView = UI.view;
+    if (mainView === 'list') { mainView = 'profile'; if (!UI.charId) UI.charId = (charsInScope()[0] || {}).id || null; }
+    app.innerHTML = `<nav class="side" data-scroll="side" aria-label="Books">${sideHTML()}</nav>
+      <section class="listcol" data-scroll="list">${listHTML(true)}</section>
+      <main class="mainpane" data-scroll="main">${viewHTML(mainView, true)}</main>`;
+  } else {
+    app.innerHTML = viewHTML(UI.view, false);
+  }
+  app.querySelectorAll('[data-scroll]').forEach(el => { if (keep[el.dataset.scroll] != null) el.scrollTop = keep[el.dataset.scroll]; });
+  window.scrollTo(0, wy);
+  renderSheet();
+  autosize(document);
+}
+function refreshList() {
+  if (!isWide()) return; const lc = document.querySelector('.listcol'); if (!lc) return;
+  if (lc.contains(document.activeElement)) return;
+  const st = lc.scrollTop; lc.innerHTML = listHTML(true); lc.scrollTop = st;
+}
+function autosize(root) { root.querySelectorAll('textarea.field').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }); }
+
+function viewHTML(v, wide) {
+  const c = charById(UI.charId);
+  if (v === 'profile' && c) return profileHTML(c, wide);
+  if (v === 'profile') return emptyMainHTML();
+  if (v === 'growth' && c) return growthHTML(c);
+  if (v === 'charsettings' && c) return charSettingsHTML(c);
+  if (v === 'connections') return connectionsHTML(wide);
+  if (v === 'notes') return notesHTML(wide);
+  if (v === 'settings') return settingsHTML(wide);
+  return listHTML(false);
+}
+function navHTML(active) {
+  const b = (v, icon, label) => `<button class="${active === v ? 'on' : ''}" data-a="go" data-v="${v}">${icon}${label}</button>`;
+  return `<nav class="bottomnav">${b('list', I.people, 'Characters')}${b('notes', I.note, 'Loose notes')}${b('settings', I.gear, 'Settings')}</nav>`;
+}
+function emptyMainHTML() {
+  return `<div class="screen narrow" style="padding-top:80px"><h1 class="h1">Start with just a name.</h1>
+    <div class="muted" style="font-size:15px;line-height:1.5">Nothing has to be filled in up front. Add what you know, when you know it — before, during or after writing.</div>
+    <div class="row g8 wrap"><button class="btn-accent" data-a="newChar">New character</button><button class="btn-line" data-a="newBook">New book</button></div></div>`;
+}
+
+function sideHTML() {
+  const link = (on, attrs, dot, label) => `<button class="sidelink ${on ? 'on' : ''}" ${attrs}>${dot ? `<span class="d" style="background:${dot}"></span>` : ''}${esc(label)}</button>`;
+  let h = `<div style="font-family:var(--serif);font-size:24px;font-weight:600;padding:0 8px">Unfurl</div><div class="stack g4">
+    <div class="label" style="padding:0 8px 6px">Books</div>
+    ${link(UI.scope === 'all', 'data-a="scope" data-s="all"', '', 'All characters')}`;
+  for (const s of S.series) {
+    const on = UI.scope === 'series:' + s.id;
+    h += `<button class="sidelink ${on && UI.chip === 'all' ? 'on' : ''}" data-a="scope" data-s="series:${s.id}" style="font-weight:600">${I.book}${esc(s.name)}</button>`;
+    for (const b of seriesBooks(s.id)) h += `<button class="sidelink ${on && UI.chip === b.id ? 'on' : ''}" style="padding-left:36px" data-a="scope" data-s="series:${s.id}" data-chip="${b.id}"><span class="d" style="background:${bookColor(b)}"></span>Book ${b.part}<span class="muted ellip" style="font-size:12px">· ${esc(b.title)}</span></button>`;
+  }
+  for (const b of S.books.filter(b => !b.series)) h += link(UI.scope === 'book:' + b.id, `data-a="scope" data-s="book:${b.id}"`, bookColor(b), b.title);
+  h += `<button class="sidelink muted" data-a="newBook">+ New book</button></div><div style="flex:1"></div><div class="stack g4">
+    ${link(UI.view === 'connections', 'data-a="go" data-v="connections"', '', 'Connections')}
+    ${link(UI.view === 'notes', 'data-a="go" data-v="notes"', '', 'Loose notes')}
+    ${link(UI.view === 'settings', 'data-a="go" data-v="settings"', '', 'Settings')}</div>`;
+  return h;
+}
+
+function listHTML(inCol) {
+  const t = scopeTitle();
+  const chars = charsInScope();
+  const sc = UI.scope;
+  let chips = '';
+  if (sc.startsWith('series:')) {
+    const bs = seriesBooks(sc.slice(7));
+    chips = `<div class="chips"><button class="chip ${UI.chip === 'all' ? 'on' : ''}" data-a="chip" data-chip="all">All</button>${bs.map(b => `<button class="chip ${UI.chip === b.id ? 'on' : ''}" data-a="chip" data-chip="${b.id}">Book ${b.part}</button>`).join('')}</div>`;
+  }
+  const editBook = (() => { const bs = scopeBooks(); return bs && bs.length === 1 ? `<button class="btn-text" data-a="editBook" data-id="${bs[0].id}">Edit book</button>` : ''; })();
+  const cards = chars.map(c => `<button class="charcard ${inCol && UI.charId === c.id && ['list','profile','growth','charsettings'].includes(UI.view) ? 'sel' : ''}" data-a="open" data-id="${c.id}">
+      ${avatar(c, inCol ? 44 : 52)}<span class="stack g4 grow"><span style="font-size:16px;font-weight:600" class="ellip">${esc(c.name || 'Unnamed')}</span>
+      <span class="small muted ellip">${esc(snippet(c))}</span>${inCol ? '' : `<span class="tiny muted ellip">${esc(charBooksLabel(c))} · ${plural(c.blocks.filter(blockFilled).length, 'block', 'blocks')}</span>`}</span></button>`).join('');
+  const empty = !S.chars.length ? `<div class="card pad stack g10"><div style="font-family:var(--serif);font-size:20px">Start with just a name.</div>
+      <div class="muted" style="font-size:14px;line-height:1.5">Nothing has to be filled in up front. Add what you know, when you know it.</div>
+      ${S.books.length ? '' : `<div class="muted" style="font-size:14px;line-height:1.5">Tip: add a book first, so your characters know where they belong.</div><button class="btn-line" data-a="newBook">+ New book</button>`}</div>`
+    : !chars.length ? `<div class="empty-hint">${UI.q ? 'No one by that name.' : 'No characters in this book yet.'}</div>` : '';
+  const header = inCol ? '' : `<div class="row between"><div style="font-family:var(--serif);font-size:22px;font-weight:600">Unfurl</div>
+      <div class="row g8"><button class="btn-round" data-a="go" data-v="connections" aria-label="Connections">${I.web}</button><button class="btn-round" data-a="search" aria-label="Search characters">${I.search}</button></div></div>
+    <button class="card row between" style="min-height:56px;padding:10px 16px;text-align:left;width:100%;border-radius:16px" data-a="scopeSheet">
+      <span class="stack g4"><span class="tiny muted" style="font-weight:500">${esc(t.kicker)}</span><span style="font-size:16px;font-weight:600">${esc(t.title)}</span></span>${I.down}</button>`;
+  const search = (UI.searching || inCol) ? `<label class="jot"><span class="muted">${I.search}</span><input id="searchbox" data-f="search" placeholder="Search characters" value="${esc(UI.q)}" aria-label="Search characters"></label>` : '';
+  return `<div class="screen" ${inCol ? '' : ''}>${header}${chips}${search}
+    <div class="row between" style="align-items:baseline;margin-top:4px"><h1 class="${inCol ? '' : 'h1'}" style="${inCol ? 'font-size:26px' : ''}">Characters</h1><span class="small muted">${plural(chars.length, 'person', 'people')} ${editBook}</span></div>
+    ${suggestionHTML()}${empty}<div class="stack g10">${cards}</div>
+    ${inCol ? `<button class="btn-dark" style="min-height:48px;font-size:14px;border-radius:14px" data-a="newChar">${I.plus} New character</button>` : ''}
+  </div>${inCol ? '' : `<button class="fab" data-a="newChar">${I.plus} New character</button>${navHTML('list')}`}`;
+}
+
+function blockHTML(c, b) {
+  const helpOn = c.help || UI.ask[b.id];
+  const q = questionFor(c, b);
+  const empty = !blockFilled(b);
+  const renaming = UI.rename === b.id;
+  const title = renaming
+    ? `<input class="field" data-f="bname" data-c="${c.id}" data-b="${b.id}" value="${esc(b.name)}" style="font-size:13px;font-weight:600;color:var(--accent)" aria-label="Block name" autofocus>`
+    : `<div class="block-title grow">${esc(b.name)}</div>`;
+  const qBtn = (q || b.type === 'list') && !c.help && (empty || b.type === 'list') ? `<button class="btn-icon" style="color:var(--accent)" data-a="ask" data-b="${b.id}" aria-label="Show a question for this block">${I.q}</button>` : '';
+  const ren = `<button class="btn-icon muted" data-a="${renaming ? 'renameDone' : 'rename'}" data-b="${b.id}" aria-label="${renaming ? 'Done' : 'Rename block'}">${renaming ? '<span style="font-size:13px;font-weight:600;color:var(--accent)">Done</span>' : I.pen}</button>`;
+  let body = '';
+  if (b.type === 'text') {
+    body = `<textarea class="field" rows="1" data-f="btext" data-c="${c.id}" data-b="${b.id}" aria-label="${esc(b.name)}" placeholder="${esc(helpOn && q ? q : 'Tap to write…')}">${esc(b.text)}</textarea>`;
+  } else {
+    const open = UI.open[b.id];
+    const fold = `<button class="mini-seg" style="border:none;padding:4px 8px;min-height:32px;font-size:12px;font-weight:500;color:var(--soft);display:flex;align-items:center;gap:4px;border-radius:10px" data-a="fold" data-b="${b.id}" aria-label="${open ? 'Fold' : 'Show all of ' + esc(b.name)}">${open ? 'Fold' : 'Show all'}<span style="display:flex;transform:${open ? 'rotate(180deg)' : 'none'}">${I.dn}</span></button>`;
+    if (!open) {
+      const pinned = b.lines.filter(l => l.pin);
+      const rest = b.lines.length - pinned.length;
+      body = pinned.length ? `<div class="stack g6">${pinned.map(l => `<button class="frow" data-a="fold" data-b="${b.id}"><span class="lab">${esc(l.label)}</span><span style="font-weight:500">${(l.value || '').trim() ? esc(l.value) : '<span class="muted">—</span>'}</span></button>`).join('')}
+        ${rest > 0 ? `<div class="tiny muted">+ ${plural(rest, 'more line', 'more lines')}</div>` : ''}</div>`
+        : `<button class="frow muted small" data-a="fold" data-b="${b.id}">${b.lines.length ? plural(b.lines.length, 'line', 'lines') + ' · pin the ones you check most' : 'Empty list — tap to add lines'}</button>`;
+    } else {
+      body = `<div class="stack">${b.lines.map(l => `<div class="lrow">
+          <input class="lab" data-f="llabel" data-c="${c.id}" data-b="${b.id}" data-l="${l.id}" value="${esc(l.label)}" aria-label="Line name">
+          <input class="field grow" data-f="lval" data-c="${c.id}" data-b="${b.id}" data-l="${l.id}" value="${esc(l.value)}" aria-label="${esc(l.label)}" placeholder="${esc(helpOn && LINE_HINTS[norm(l.label)] ? fill(LINE_HINTS[norm(l.label)], c.pron) : '')}">
+          <button class="btn-icon" style="color:${l.pin ? 'var(--accent)' : 'var(--faint)'}" data-a="pin" data-c="${c.id}" data-b="${b.id}" data-l="${l.id}" aria-label="${l.pin ? 'Unpin from short list' : 'Pin to short list'}">${I.pin(l.pin)}</button>
+          <button class="btn-icon muted" data-a="delLine" data-c="${c.id}" data-b="${b.id}" data-l="${l.id}" aria-label="Remove line">${I.x}</button></div>`).join('')}
+        <button class="btn-text" style="border-top:1px solid var(--line2);border-radius:0;justify-content:flex-start" data-a="addLine" data-c="${c.id}" data-b="${b.id}">${I.plus} Add a line</button>
+        <div class="tiny muted" style="padding-top:2px">Pinned lines show when the block is folded.</div></div>`;
+    }
+    return `<div class="card block"><div class="row g4">${title}${ren}${helpOn ? '' : qBtn}${fold}</div>${body}</div>`;
+  }
+  return `<div class="card block"><div class="row g4">${title}${ren}${helpOn ? '' : qBtn}</div>${body}</div>`;
+}
+
+function profileHTML(c, wide) {
+  const notes = S.notes.filter(n => n.charId === c.id).sort((a, b) => b.at - a.at);
+  const links = S.links.filter(l => l.a === c.id || l.b === c.id);
+  const extra = c.images.length - 3;
+  const imgs = c.images.slice(0, 3).map((im, i) => `<button class="im" style="background-image:url('${im.data}');position:relative" data-a="viewImg" data-c="${c.id}" data-i="${im.id}" aria-label="View image">${i === 2 && extra > 0 ? `<span style="position:absolute;inset:0;border-radius:14px;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600">+${extra}</span>` : ''}</button>`).join('');
+  return `<div class="screen nonav ${wide ? '' : ''}">
+    <div class="row between">
+      <button class="btn-round mobile-only" data-a="go" data-v="list" aria-label="Back to characters">${I.back}</button><span class="wide-only"></span>
+      <div class="row g8">
+        <button class="btn-round" data-a="go" data-v="charsettings" aria-label="${esc(c.name || 'Character')}'s settings">${I.sliders}</button>
+        <button class="btn-pill" data-a="helpChar">Help me get started ${tog(c.help)}</button>
+      </div>
+    </div>
+    <div class="row g14">${avatar(c, 72)}<div class="stack g4 grow">
+      <input class="field" data-f="cname" data-c="${c.id}" value="${esc(c.name)}" placeholder="Name" aria-label="Name" style="font-family:var(--serif);font-size:30px;font-weight:500;line-height:1.2;letter-spacing:-.01em">
+      <div class="small muted">${esc(charBooksLabel(c))}</div></div></div>
+    <div class="imgs">${imgs}<button class="add" data-a="addImg" data-c="${c.id}" aria-label="Add an image">${I.plus}Image</button></div>
+    <label class="stack g6"><span class="label">Jot something down</span>
+      <span class="jot"><input id="jot" placeholder="No heading needed…" data-c="${c.id}" enterkeyhint="done"><button class="go" data-a="jot" data-c="${c.id}" aria-label="Save note" style="color:var(--on-accent)">${I.arrow}</button></span></label>
+    ${notes.length ? `<div class="stack g8">${notes.map(n => noteCard(n, false)).join('')}</div>` : ''}
+    <div class="stack g10 blocks">${c.blocks.map(b => blockHTML(c, b)).join('')}</div>
+    <button class="btn-dash" data-a="addBlock" data-c="${c.id}">${I.plus} Add a block</button>
+    <div class="stack g10">
+      <button class="row between" style="border:none;background:transparent;padding:0;text-align:left" data-a="go" data-v="connections" data-focus="${c.id}"><span style="font-family:var(--serif);font-size:20px">Connections</span><span class="small muted">See all →</span></button>
+      <div class="row g8 wrap">${links.map(l => { const o = charById(l.a === c.id ? l.b : l.a); if (!o) return '';
+        return `<span class="linkchip"><button style="border:none;background:transparent;display:flex;align-items:center;gap:8px;padding:0" data-a="open" data-id="${o.id}">${avatar(o, 32)}${esc(o.name || 'Unnamed')} <span class="muted">· ${esc(l.label)}</span></button><button class="btn-icon muted" style="width:28px;height:28px" data-a="delLink" data-id="${l.id}" aria-label="Remove connection">${I.x}</button></span>`; }).join('')}
+        <button class="btn-round" style="border:1.5px dashed var(--dash);background:transparent" data-a="addLink" data-c="${c.id}" aria-label="Add a connection">${I.plus}</button></div>
+    </div>
+    ${c.books.length ? `<button class="growbtn" data-a="go" data-v="growth"><span class="stack g4"><span style="font-size:15px;font-weight:600">See how ${c.name ? esc(c.name) + ' grows' : 'they grow'}</span><span class="tiny" style="opacity:.75">Changes per book</span></span>${I.next}</button>` : ''}
+  </div>`;
+}
+function noteCard(n, showChar) {
+  const c = charById(n.charId);
+  return `<div class="card notecard"><div style="font-size:15px;line-height:1.5;white-space:pre-wrap">${esc(n.text)}</div>
+    <div class="row between g8"><span class="row g6 tiny muted">${c && showChar ? avatar(c, 20) + esc(c.name || 'Unnamed') + ' · ' : ''}${ago(n.at)}</span>
+    <span class="row g6"><button class="btn-icon muted" data-a="delNote" data-id="${n.id}" aria-label="Delete note">${I.x}</button>
+    <button class="btn-line" style="min-height:36px;font-size:13px;border-radius:12px" data-a="${c ? 'moveNote' : 'linkNote'}" data-id="${n.id}">${c ? 'Move to block' : 'Link to character'}</button></span></div></div>`;
+}
+
+function notesHTML(wide) {
+  const notes = S.notes.slice().sort((a, b) => b.at - a.at);
+  const opts = `<option value="">No character</option>` + S.chars.map(c => `<option value="${c.id}" ${UI.noteFor === c.id ? 'selected' : ''}>${esc(c.name || 'Unnamed')}</option>`).join('');
+  const np = UI.namePrompt;
+  return `<div class="screen narrow"><div class="stack g6"><h1 class="h1">Loose notes</h1><div class="muted" style="font-size:14px;line-height:1.45">Jotted while writing. Sort them into a block later, or leave them be.</div></div>
+    <div class="stack g8"><span class="jot"><input id="jot" placeholder="Jot something down…" enterkeyhint="done"><button class="go" data-a="jot" aria-label="Save note" style="color:var(--on-accent)">${I.arrow}</button></span>
+      <label class="row g8 small muted">For <select data-f="noteFor" style="border:1px solid var(--line);background:var(--card);border-radius:10px;min-height:36px;padding:0 8px;font-size:14px">${opts}</select></label></div>
+    ${np ? `<div class="suggest"><div style="font-size:15px">Make <b>${esc(np.name)}</b> a new character?</div><div class="row g8"><button class="btn-accent grow" data-a="npYes">Yes</button><button class="btn-line grow" data-a="npNo">No</button></div></div>` : ''}
+    ${suggestionHTML()}
+    <div class="stack g10">${notes.length ? notes.map(n => noteCard(n, true)).join('') : '<div class="empty-hint">Nothing here yet. Anything you jot down on a character also shows up here.</div>'}</div>
+  </div>${wide ? '' : navHTML('notes')}`;
+}
+
+function growthHTML(c) {
+  const own = charBooks(c);
+  let books = [];
+  const sids = [...new Set(own.map(b => b.series).filter(Boolean))];
+  for (const sid of sids) { const bs = seriesBooks(sid); const first = Math.min(...own.filter(b => b.series === sid).map(b => b.part)); books.push(...bs.filter(b => b.part >= first)); }
+  books.push(...own.filter(b => !b.series));
+  const body = books.map((b, i) => {
+    const es = c.hist.filter(h => h.book === b.id).sort((x, y) => x.at - y.at);
+    const last = i === books.length - 1;
+    const items = es.map(e => {
+      const kind = !e.to ? 'removed' : !e.from ? (i === 0 ? 'first written' : 'added') : 'changed';
+      return `<div class="card" style="padding:14px;border-radius:16px;display:flex;flex-direction:column;gap:6px">
+        <div class="tiny muted" style="font-weight:600">${esc(e.bname)}${e.line ? ' › ' + esc(e.line) : ''} · ${kind}</div>
+        ${e.from && e.to ? `<div class="strike" style="font-size:14px;line-height:1.45;white-space:pre-wrap">${esc(e.from)}</div>` : ''}
+        <div style="font-size:15px;line-height:1.45;white-space:pre-wrap" class="${e.to ? '' : 'strike'}">${esc(e.to || e.from)}</div></div>`;
+    }).join('');
+    return `<div class="tl"><div class="rail"><div class="dot ${es.length ? '' : 'empty'}"></div>${last ? '' : '<div class="bar"></div>'}</div>
+      <div class="stack g8 grow" style="padding-bottom:22px"><div style="font-size:13px;font-weight:600;color:${es.length ? 'var(--accent)' : 'var(--muted)'}">${esc(bookFull(b))}</div>
+      ${items || `<div class="empty-hint">Nothing yet. What you add while working in ${esc(bookName(b))} shows up here.</div>`}</div></div>`;
+  }).join('');
+  return `<div class="screen nonav narrow"><div class="row g12"><button class="btn-round" data-a="go" data-v="profile" aria-label="Back">${I.back}</button>
+    <div class="stack g4"><h1 style="font-size:26px">How ${c.name ? esc(c.name) + ' grows' : 'they grow'}</h1><div class="small muted">What changed or was added, per book</div></div></div>
+    <div class="muted small" style="line-height:1.5">Changes are kept for the book you're working in. Pick a book at the top of the character list to switch.</div>
+    <div class="stack">${body || '<div class="empty-hint">Add this character to a book to follow how they grow.</div>'}</div></div>`;
+}
+
+function charSettingsHTML(c) {
+  const nm = esc(c.name || 'Unnamed');
+  const bookChips = S.books.length ? S.series.map(s => seriesBooks(s.id)).flat().concat(S.books.filter(b => !b.series)).map(b =>
+    `<button class="chip ${c.books.includes(b.id) ? 'on' : ''}" data-a="charBook" data-c="${c.id}" data-id="${b.id}">${esc(b.series ? (seriesById(b.series).name + ' ' + b.part) : b.title)}</button>`).join('') : '<span class="small muted">No books yet.</span>';
+  return `<div class="screen nonav narrow"><div class="row g12"><button class="btn-round" data-a="go" data-v="profile" aria-label="Back">${I.back}</button><h1 style="font-size:26px">${nm}'s settings</h1></div>
+    <div class="stack g10"><div class="label">Pronouns</div><div class="seg">${['she', 'he', 'they', 'other'].map(p => `<button class="${(c.pronLabel || c.pron) === p ? 'on' : ''}" data-a="pron" data-c="${c.id}" data-p="${p}">${p}</button>`).join('')}</div>
+      <div class="tiny muted">Start blocks read right for ${nm}. “Other” uses they/them.</div></div>
+    <div class="stack g10"><div class="label">Shows up in</div><div class="row g8 wrap">${bookChips}</div></div>
+    <div class="stack g10"><div class="label">${nm}'s blocks</div>
+      <div class="card list-rows">${c.blocks.map((b, i) => `<div class="srow">
+        <span class="stack"><button class="btn-icon muted" style="height:22px;${i === 0 ? 'opacity:.3' : ''}" data-a="mvBlock" data-c="${c.id}" data-b="${b.id}" data-d="-1" aria-label="Move up">${I.up}</button><button class="btn-icon muted" style="height:22px;${i === c.blocks.length - 1 ? 'opacity:.3' : ''}" data-a="mvBlock" data-c="${c.id}" data-b="${b.id}" data-d="1" aria-label="Move down">${I.dn}</button></span>
+        <div class="grow ellip" style="font-size:15px">${esc(b.name)}</div>
+        <div class="mini-seg"><button class="${b.type === 'text' ? 'on' : ''}" data-a="btype" data-c="${c.id}" data-b="${b.id}" data-t="text">Text</button><button class="${b.type === 'list' ? 'on' : ''}" data-a="btype" data-c="${c.id}" data-b="${b.id}" data-t="list">List</button></div>
+        <button class="btn-icon muted" data-a="delBlock" data-c="${c.id}" data-b="${b.id}" aria-label="Remove this block">${I.x}</button></div>`).join('')}</div>
+      <button class="btn-dash" data-a="addBlock" data-c="${c.id}">${I.plus} Add a block</button></div>
+    <div style="padding:14px 16px;border-radius:16px;background:var(--tint);font-size:13px;line-height:1.5">Changes here are only for ${nm}. Your start blocks for new characters live in Settings.</div>
+    <button class="btn-line danger" data-a="delChar" data-c="${c.id}">Delete ${nm}</button></div>`;
+}
+
+function connectionsHTML(wide) {
+  const pool = charsInScope().length ? charsInScope() : S.chars;
+  let f = charById(UI.connFocus) || charById(UI.charId) || pool[0];
+  if (!f) return `<div class="screen narrow"><div class="row g12"><button class="btn-round mobile-only" data-a="go" data-v="list" aria-label="Back">${I.back}</button><h1 style="font-size:26px">Connections</h1></div><div class="empty-hint">Add a few characters first, then link them from their profile.</div></div>`;
+  UI.connFocus = f.id;
+  const nb = id => S.links.filter(l => l.a === id || l.b === id).map(l => l.a === id ? l.b : l.a);
+  const ring1 = [...new Set(nb(f.id))].filter(charById);
+  // order ring1 so linked neighbours sit next to each other
+  const ordered = []; const left = ring1.slice();
+  while (left.length) { let cur = left.shift(); ordered.push(cur); let nx; while ((nx = left.findIndex(x => nb(cur).includes(x))) > -1) { cur = left.splice(nx, 1)[0]; ordered.push(cur); } }
+  const ring2 = [];
+  for (const a of ordered) for (const x of nb(a)) if (x !== f.id && !ordered.includes(x) && !ring2.some(r => r.id === x) && charById(x)) ring2.push({ id: x, near: a });
+  const W = 480, H = 480, cx = 240; let cy = 0;
+  
+  const n1 = ordered.length;
+  const r1 = ring2.length ? 120 : 145, off = n1 === 2 ? -Math.PI / 6 - Math.PI / 2 : 0;
+  cy = n1 <= 2 && n1 > 0 ? 300 : 240;
+  const pos = { [f.id]: [cx, cy] };
+  ordered.forEach((id, i) => { const ang = n1 === 2 ? -Math.PI * (i ? 1 / 6 : 5 / 6) : -Math.PI / 2 + off + (2 * Math.PI * i) / Math.max(n1, 1); pos[id] = [cx + Math.cos(ang) * r1, cy + Math.sin(ang) * r1]; });
+  const byNear = {};
+  ring2.forEach(r => (byNear[r.near] = byNear[r.near] || []).push(r.id));
+  for (const a in byNear) { const base = Math.atan2(pos[a][1] - cy, pos[a][0] - cx); const k = byNear[a].length;
+    byNear[a].forEach((id, j) => { const ang = base + (j - (k - 1) / 2) * 0.55; pos[id] = [cx + Math.cos(ang) * 200, cy + Math.sin(ang) * 200]; }); }
+  const shown = new Set(Object.keys(pos));
+  const edges = S.links.filter(l => shown.has(l.a) && shown.has(l.b));
+  const labels = [...new Set(edges.map(e => e.label))];
+  if (UI.connFilter !== 'All' && !labels.includes(UI.connFilter)) UI.connFilter = 'All';
+  const lit = e => UI.connFilter === 'All' || e.label === UI.connFilter;
+  const svgE = edges.map(e => { const [x1, y1] = pos[e.a], [x2, y2] = pos[e.b];
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${lit(e) ? 'var(--accent)' : 'var(--line)'}" stroke-width="2"/>`; }).join('');
+  const svgL = edges.filter(lit).map(e => { const [x1, y1] = pos[e.a], [x2, y2] = pos[e.b]; const t = e.a === f.id ? 0.58 : e.b === f.id ? 0.42 : 0.5; const mx = x1 + (x2 - x1) * t, my = y1 + (y2 - y1) * t; const w = Math.min(120, e.label.length * 6.2 + 14);
+    return `<rect x="${mx - w / 2}" y="${my - 10}" width="${w}" height="20" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="${mx}" y="${my + 4}" text-anchor="middle" font-size="11" fill="var(--soft)">${esc(e.label.length > 18 ? e.label.slice(0, 17) + '…' : e.label)}</text>`; }).join('');
+  const node = (id, r) => { const c = charById(id); const [x, y] = pos[id]; const hue = c.hue % 6;
+    return `<g data-a="connFocus" data-id="${id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${r}" class="nd nd${hue}" ${id === f.id ? 'stroke="var(--accent)" stroke-width="3"' : ''}/>
+      ${c.images[0] ? `<clipPath id="cp${id}"><circle cx="${x}" cy="${y}" r="${r - (id === f.id ? 2 : 0)}"/></clipPath><image href="${c.images[0].data}" x="${x - r}" y="${y - r}" width="${r * 2}" height="${r * 2}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cp${id})"/>` :
+      `<text x="${x}" y="${y + r * 0.32}" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="${r * 0.8}" class="ndt${hue}">${esc((c.name || '?').charAt(0).toUpperCase())}</text>`}
+      <text x="${x}" y="${(id !== f.id && y < cy - 4) ? y - r - 7 : y + r + 15}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)" stroke="var(--card)" stroke-width="4" paint-order="stroke">${esc((c.name || 'Unnamed').split(' ')[0])}</text></g>`; };
+  const nodes = [...ordered.map(id => node(id, 24)), ...ring2.map(r => node(r.id, 20)), node(f.id, 30)].join('');
+  const listRows = edges.filter(lit).map(e => { const a = charById(e.a), b = charById(e.b);
+    return `<button class="row between" style="min-height:48px;font-size:14px;width:100%;border:none;background:transparent;padding:0;text-align:left" data-a="open" data-id="${a.id}"><span>${esc(a.name || 'Unnamed')} <span class="muted">→</span> ${esc(b.name || 'Unnamed')}</span><span class="muted">${esc(e.label)}</span></button>`; }).join('');
+  const t = scopeTitle();
+  return `<div class="screen ${wide ? 'narrow' : ''}"><div class="row g12"><button class="btn-round mobile-only" data-a="${charById(UI.charId) ? 'goProfile' : 'go'}" data-v="list" aria-label="Back">${I.back}</button>
+    <div class="stack g4"><h1 style="font-size:26px">Connections</h1><div class="small muted">${esc(t.title)}</div></div></div>
+    ${labels.length ? `<div class="chips">${['All', ...labels].map(l => `<button class="chip ${UI.connFilter === l ? 'on' : ''}" data-a="connFilter" data-l="${esc(l)}">${esc(l)}</button>`).join('')}</div>` : ''}
+    <div class="card" style="border-radius:22px;overflow:hidden"><svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;max-height:480px">${svgE}${svgL}${nodes}</svg></div>
+    ${edges.length ? `<div class="card list-rows">${listRows}</div>` : `<div class="empty-hint">${esc(f.name || 'This character')} has no connections yet. Add one from the profile.</div>`}
+    <div class="row between"><span class="tiny muted">Tap a character to put them in the middle.</span><button class="btn-text" data-a="addLink" data-c="${f.id}">${I.plus} Add</button></div>
+  </div>${wide ? '' : navHTML('')}`;
+}
+
+function settingsHTML(wide) {
+  const st = S.settings;
+  const qs = st.questions.map((q, i) => {
+    const label = q.sid ? (st.startBlocks.find(sb => sb.id === q.sid) ? fill(st.startBlocks.find(sb => sb.id === q.sid).tpl, 'they') : null) : q.block;
+    if (label == null) return '';
+    return `<div class="stack g6" style="padding:14px 0"><div class="row between g10"><span class="tiny" style="font-weight:600;color:var(--accent)">${esc(label)}</span>
+      <span class="row g4">${q.sid ? '' : `<button class="btn-icon muted" data-a="delQ" data-id="${q.id}" aria-label="Delete question">${I.x}</button>`}<button style="border:none;background:transparent;padding:0;min-height:32px;display:flex;align-items:center" data-a="qOn" data-id="${q.id}" aria-label="${q.on ? 'Switch this question off' : 'Switch this question on'}">${tog(q.on)}</button></span></div>
+      <textarea class="field" rows="1" data-f="qtext" data-id="${q.id}" style="color:${q.on ? 'var(--ink)' : 'var(--faint)'}" aria-label="Question for ${esc(label)}">${esc(fill(q.text, 'they'))}</textarea></div>`;
+  }).join('');
+  const sbs = st.startBlocks.map((sb, i) => `<div class="stack"><div class="srow">
+      <span class="stack"><button class="btn-icon muted" style="height:22px;${i === 0 ? 'opacity:.3' : ''}" data-a="mvSb" data-id="${sb.id}" data-d="-1" aria-label="Move up">${I.up}</button><button class="btn-icon muted" style="height:22px;${i === st.startBlocks.length - 1 ? 'opacity:.3' : ''}" data-a="mvSb" data-id="${sb.id}" data-d="1" aria-label="Move down">${I.dn}</button></span>
+      <input class="field grow" data-f="sbname" data-id="${sb.id}" value="${esc(fill(sb.tpl, 'they'))}" aria-label="Start block name">
+      <div class="mini-seg"><button class="${sb.type === 'text' ? 'on' : ''}" data-a="sbType" data-id="${sb.id}" data-t="text">Text</button><button class="${sb.type === 'list' ? 'on' : ''}" data-a="sbType" data-id="${sb.id}" data-t="list">List</button></div>
+      <button class="btn-icon muted" data-a="delSb" data-id="${sb.id}" aria-label="Remove start block">${I.x}</button></div>
+      ${sb.type === 'list' ? (UI.sbOpen === sb.id ? `<div class="stack" style="padding:0 0 10px 44px">${(sb.lines || []).map((l, j) => `<div class="row g6" style="min-height:40px"><input class="field grow" data-f="sbline" data-id="${sb.id}" data-j="${j}" value="${esc(l.label)}" style="font-size:14px" aria-label="Line name">
+          <button class="btn-icon" style="color:${l.pin ? 'var(--accent)' : 'var(--faint)'}" data-a="sbPin" data-id="${sb.id}" data-j="${j}" aria-label="${l.pin ? 'Unpin' : 'Pin'}">${I.pin(l.pin)}</button><button class="btn-icon muted" data-a="sbDelLine" data-id="${sb.id}" data-j="${j}" aria-label="Remove line">${I.x}</button></div>`).join('')}
+          <button class="btn-text" style="justify-content:flex-start" data-a="sbAddLine" data-id="${sb.id}">${I.plus} Add a line</button></div>`
+        : `<button class="btn-text tiny" style="padding-left:44px;min-height:34px;justify-content:flex-start;font-size:13px" data-a="sbOpen" data-id="${sb.id}">Lines: ${esc((sb.lines || []).map(l => l.label).join(', ') || 'none')} · edit</button>`) : ''}</div>`).join('');
+  const dbx = dbxToken();
+  const books = S.series.map(s => seriesBooks(s.id)).flat().concat(S.books.filter(b => !b.series));
+  return `<div class="screen narrow" style="gap:26px"><div class="row g12"><button class="btn-round mobile-only" data-a="go" data-v="list" aria-label="Back">${I.back}</button><h1 class="h1">Settings</h1></div>
+    <section class="stack g10"><h2 class="h2">Help questions</h2>
+      <button class="card row between g12" style="padding:14px 16px;text-align:left;width:100%" data-a="helpDefault"><span class="stack g4"><span style="font-size:14px;font-weight:600">On for new characters</span><span class="small muted">You can still switch it per character</span></span>${tog(st.helpDefault)}</button>
+      <div class="small muted" style="line-height:1.45">Rewrite any question in your own words, or switch one off. They show as grey text in empty blocks.</div>
+      <div class="card list-rows">${qs}</div>
+      <button class="btn-dash" style="min-height:48px" data-a="addQ">${I.plus} Add a question</button></section>
+    <section class="stack g10"><h2 class="h2">Start blocks</h2><div class="small muted" style="line-height:1.45">Every new character starts with these. Rename, reorder or remove them. Write “they” — it turns into she or he per character.</div>
+      <div class="card list-rows" style="padding:0 12px">${sbs}</div>
+      <button class="btn-dash" style="min-height:48px" data-a="addBlock" data-start="1">${I.plus} Add a start block</button></section>
+    <section class="stack g10"><h2 class="h2">Books</h2>
+      ${books.length ? `<div class="card list-rows">${books.map(b => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0" data-a="editBook" data-id="${b.id}"><span class="d" style="width:12px;height:12px;border-radius:6px;background:${bookColor(b)}"></span><span class="grow">${esc(bookFull(b))}${b.series ? `<span class="muted small"> · ${esc(seriesById(b.series).name)}</span>` : ''}</span><span class="muted">${I.next}</span></button>`).join('')}</div>` : ''}
+      <button class="btn-dash" style="min-height:48px" data-a="newBook">${I.plus} New book</button></section>
+    <section class="stack g10"><h2 class="h2">Look</h2>
+      <button class="card row between g12" style="padding:14px 16px;text-align:left;width:100%" data-a="dark"><span style="font-size:15px;font-weight:500">Dark mode</span>${tog(st.dark)}</button>
+      <div class="small muted">Each book keeps its own colour theme. Change it under Books.</div></section>
+    <section class="stack g10"><h2 class="h2">Backup</h2>
+      ${dbx ? `<button class="btn-dark" data-a="dbxUp">${I.cloud} Back up to Dropbox</button>
+        <div class="row between"><span class="small muted">Last backup: ${st.lastBackup ? new Date(st.lastBackup).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'not yet'}</span><button class="btn-text" data-a="dbxDown">Restore</button></div>
+        <button class="btn-text muted" style="justify-content:flex-start;color:var(--muted)" data-a="dbxOff">Disconnect Dropbox</button>`
+      : `<div class="card pad stack g10"><div style="font-size:14px;line-height:1.45">Connect Dropbox once, then back up with one tap. Paste the app key from your Dropbox App Console (see LEESMIJ).</div>
+        <input class="field" data-f="dbxKey" value="${esc(st.dropboxKey)}" placeholder="Dropbox app key" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px" aria-label="Dropbox app key" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="btn-dark" data-a="dbxConnect">${I.cloud} Connect Dropbox</button></div>`}
+      <div class="row g8"><button class="btn-line grow" data-a="export">Export file</button><button class="btn-line grow" data-a="import">Import file</button></div></section>
+    <div class="tiny muted" style="text-align:center">Unfurl · version ${VERSION}</div>
+  </div>${wide ? '' : navHTML('settings')}`;
+}
+
+/* ---------- sheets ---------- */
+function openSheet(name, data) { UI.sheet = name; UI.sd = data || {}; renderSheet(); setTimeout(() => { const el = $('#sheet [autofocus]'); if (el && !('ontouchstart' in window)) el.focus(); }, 60); }
+function closeSheet() { UI.sheet = null; UI.sd = {}; renderSheet(); }
+function sheetFrame(title, inner, cancel = 'Cancel') {
+  return `<div class="sheet-wrap" data-a="sheetBg"><div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="grabber"></div>
+    <div class="row between"><button class="btn-text" style="color:var(--soft)" data-a="closeSheet">${cancel}</button><div style="font-size:15px;font-weight:600">${esc(title)}</div><div style="width:52px"></div></div>${inner}</div></div>`;
+}
+function renderSheet() {
+  const el = $('#sheet'); const d = UI.sd;
+  if (!UI.sheet) { el.innerHTML = ''; return; }
+  let h = '';
+  if (UI.sheet === 'newChar') {
+    const bs = scopeBooks() || [];
+    const sc = UI.scope;
+    const all = sc.startsWith('series:') ? seriesBooks(sc.slice(7)) : sc.startsWith('book:') ? bs : S.series.map(s => seriesBooks(s.id)).flat().concat(S.books.filter(b => !b.series));
+    const opts = all.map(b => `<button class="chip ${d.books.includes(b.id) ? 'on' : ''}" data-a="ncBook" data-id="${b.id}">${esc(sc === 'all' ? bookFull(b) : bookName(b))}</button>`).join('');
+    const wholeOn = sc.startsWith('series:') && all.length && all.every(b => d.books.includes(b.id));
+    const pf = d.pron === 'other' ? 'they' : d.pron;
+    const preview = S.settings.startBlocks.map(sb => fill(sb.tpl, pf)).join(' · ');
+    h = sheetFrame('New character', `
+      <div class="row g14"><button style="width:76px;height:76px;border-radius:38px;border:1.5px dashed var(--dash);background:${d.image ? `url('${d.image}') center/cover` : 'var(--card)'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:var(--muted);flex-shrink:0" data-a="ncImg" aria-label="Start with an image">${d.image ? '' : I.image + 'Image'}</button>
+        <label class="stack g6 grow"><span class="label">Name</span><input data-f="sd" data-k="name" value="${esc(d.name)}" placeholder="Or “the bartender”" autofocus style="width:100%;min-width:0;border:none;border-bottom:2px solid var(--accent);outline:none;background:transparent;font-family:var(--serif);font-size:24px;padding:4px 0 8px"></label></div>
+      ${all.length ? `<div class="stack g10"><div class="label">Shows up in</div><div class="row g8 wrap">${opts}${sc.startsWith('series:') ? `<button class="chip ${wholeOn ? 'on' : ''}" data-a="ncWhole">Whole series</button>` : ''}</div></div>`
+        : ''}
+      <div class="stack g10"><div class="label">Pronouns <span style="font-weight:400">· optional, makes the blocks read right</span></div>
+        <div class="seg">${['she', 'he', 'they', 'other'].map(p => `<button class="${d.pron === p ? 'on' : ''}" data-a="ncPron" data-p="${p}">${p}</button>`).join('')}</div></div>
+      <button class="card row between g12" style="padding:14px 16px;text-align:left;width:100%" data-a="ncHelp"><span class="stack g4"><span style="font-size:14px;font-weight:600">Help me get started</span><span class="small muted">Shows a question in every empty block</span></span>${tog(d.help)}</button>
+      <div class="card row between g12" style="padding:14px 16px"><div class="stack g4"><div style="font-size:14px;font-weight:600">Starts with your ${S.settings.startBlocks.length} usual blocks</div><div class="small muted">${esc(preview)}</div></div>
+        <button class="btn-text" data-a="ncChange">Change</button></div>
+      <div class="small muted" style="text-align:center;line-height:1.5">Also possible: tap + on a connection, or write a name in a loose note.</div>
+      <button class="btn-dark" data-a="ncCreate">Create</button>`);
+  } else if (UI.sheet === 'book') {
+    const color = d.own || THEMES[d.theme] || '#2F5F86';
+    const tint = color + '22';
+    const edit = !!d.id;
+    const series = S.series;
+    const nextPart = sid => seriesBooks(sid).length + 1;
+    let kinds = '';
+    if (!edit) {
+      const ks = [];
+      for (const s of series) ks.push({ id: 'add:' + s.id, label: 'Part of ' + s.name, sub: 'Book ' + nextPart(s.id) + ' in the series' });
+      ks.push({ id: 'new', label: 'The start of a new series', sub: 'Name the series below' });
+      ks.push({ id: 'solo', label: 'A standalone', sub: 'No series' });
+      kinds = `<div class="stack g10"><div class="label">This book is</div>${ks.map(k => `<button class="radio ${d.kind === k.id ? 'on' : ''}" data-a="bkKind" data-k="${k.id}"><span class="ring"></span><span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(k.label)}</span><span class="tiny muted">${esc(k.sub)}</span></span></button>`).join('')}
+        ${d.kind === 'new' ? `<input class="field card" style="padding:12px 14px" data-f="sd" data-k="seriesName" value="${esc(d.seriesName)}" placeholder="Series name" aria-label="Series name">` : ''}</div>`;
+      if (d.kind && d.kind.startsWith('add:')) {
+        const sid = d.kind.slice(4); const prev = S.chars.filter(c => c.books.some(id => (bookById(id) || {}).series === sid));
+        if (prev.length) kinds += `<div class="stack g10"><div class="label">Bring characters along</div><div class="card list-rows">${prev.map(c => `<button class="srow" style="width:100%;border-left:none;border-right:none;border-bottom:none;background:transparent;text-align:left;padding:0;font-size:15px" data-a="bkBring" data-id="${c.id}"><span style="width:22px;height:22px;border-radius:6px;border:2px solid ${d.bring[c.id] ? color : 'var(--dash)'};background:${d.bring[c.id] ? color : 'transparent'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">${d.bring[c.id] ? '✓' : ''}</span>${esc(c.name || 'Unnamed')}</button>`).join('')}</div>
+          <div class="small muted">From here on, what you add to them is kept for this book, so you can see how they grow.</div></div>`;
+      }
+    }
+    h = sheetFrame(edit ? 'Edit book' : 'New book', `
+      <div class="row g14" style="border-radius:22px;background:${tint};padding:18px">
+        <button style="width:64px;height:92px;border-radius:8px;border:1.5px dashed ${color};background:${d.cover ? `url('${d.cover}') center/cover` : 'var(--card)'};font-size:11px;color:${color};flex-shrink:0" data-a="bkCover" aria-label="Add a cover">${d.cover ? '' : 'Cover'}</button>
+        <label class="stack g4 grow"><span class="tiny" style="font-weight:600;color:${S.settings.dark ? mix(color, '#ffffff', .45) : color}">Title or working title</span>
+          <input data-f="sd" data-k="title" value="${esc(d.title)}" placeholder="Untitled" autofocus style="width:100%;min-width:0;border:none;outline:none;background:transparent;font-family:var(--serif);font-size:24px;padding:2px 0"><span class="tiny muted">You can rename it any time</span></label></div>
+      <div class="stack g10"><div class="label">Colour theme</div><div class="row g10 wrap">
+        ${Object.keys(THEMES).map(n => `<button class="swatch ${!d.own && d.theme === n ? 'on' : ''}" data-a="bkTheme" data-t="${n}" style="--accent:${THEMES[n]}"><span style="background:${THEMES[n]}"></span>${n}</button>`).join('')}
+        <label class="swatch ${d.own ? 'on' : ''}" style="--accent:${d.own || '#999'};cursor:pointer"><span style="background:${d.own || 'transparent'};border:${d.own ? 'none' : '1.5px dashed var(--dash)'};display:flex;align-items:center;justify-content:center">${d.own ? '' : I.plus}</span>Own<input type="color" data-f="sdColor" value="${d.own || '#7A4E8C'}" style="position:absolute;opacity:0;width:1px;height:1px"></label></div>
+        <div class="small muted">The whole app takes on this colour while you work in this book.</div></div>
+      ${kinds}
+      <button class="btn-dark" style="background:${color};color:#fff" data-a="bkSave">${edit ? 'Save' : 'Create book'}</button>
+      ${edit ? `<button class="btn-line danger" data-a="bkDelete">Delete book</button>` : ''}`);
+  } else if (UI.sheet === 'scope') {
+    const row = (on, attrs, dot, title, sub) => `<button class="radio ${on ? 'on' : ''}" ${attrs}>${dot ? `<span style="width:14px;height:14px;border-radius:7px;background:${dot};flex-shrink:0"></span>` : `<span style="width:14px"></span>`}<span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(title)}</span>${sub ? `<span class="tiny muted">${esc(sub)}</span>` : ''}</span></button>`;
+    h = sheetFrame('Books', `<div class="stack g8">${row(UI.scope === 'all', 'data-a="scope" data-s="all"', '', 'All characters', 'Everyone, in every book')}
+      ${S.series.map(s => row(UI.scope === 'series:' + s.id, `data-a="scope" data-s="series:${s.id}"`, bookColor(seriesBooks(s.id)[0]), s.name, 'Series · ' + plural(seriesBooks(s.id).length, 'book', 'books'))).join('')}
+      ${S.books.filter(b => !b.series).map(b => row(UI.scope === 'book:' + b.id, `data-a="scope" data-s="book:${b.id}"`, bookColor(b), b.title, 'Standalone')).join('')}</div>
+      <button class="btn-dash" data-a="newBook">${I.plus} New book</button>`, 'Close');
+  } else if (UI.sheet === 'addBlock') {
+    h = sheetFrame(d.start ? 'New start block' : 'New block', `<label class="stack g6"><span class="label">Name it your way</span>
+      <input class="field card" style="padding:14px;font-size:16px" data-f="sd" data-k="name" value="${esc(d.name)}" placeholder="${d.start ? 'e.g. What they want most' : 'e.g. Scars, Habits, Secrets'}" autofocus></label>
+      <div class="stack g10"><div class="label">Kind</div><div class="seg"><button class="${d.type === 'text' ? 'on' : ''}" data-a="abType" data-t="text">Text</button><button class="${d.type === 'list' ? 'on' : ''}" data-a="abType" data-t="list">List</button></div>
+      <div class="tiny muted">${d.type === 'list' ? 'Short lines, like Eyes: grey-green.' : 'Free writing, as long as you like.'}</div></div>
+      <button class="btn-dark" data-a="abCreate">Add block</button>`);
+  } else if (UI.sheet === 'addLink') {
+    const c = charById(d.cid);
+    const used = [...new Set(S.links.map(l => l.label))];
+    const others = S.chars.filter(x => x.id !== d.cid);
+    h = sheetFrame('New connection', `<div class="stack g10"><div class="label">${esc(c.name || 'Unnamed')} and…</div>
+      <div class="row g8 wrap">${others.map(o => `<button class="chip ${d.other === o.id ? 'on' : ''}" data-a="alOther" data-id="${o.id}">${esc(o.name || 'Unnamed')}</button>`).join('')}<button class="chip ${d.other === 'new' ? 'on' : ''}" data-a="alOther" data-id="new">+ Someone new</button></div>
+      ${d.other === 'new' ? `<input class="field card" style="padding:12px 14px" data-f="sd" data-k="newName" value="${esc(d.newName)}" placeholder="Name, or “the bartender”" aria-label="New character name">` : ''}</div>
+      <label class="stack g6"><span class="label">In your words</span><input class="field card" style="padding:14px;font-size:16px" id="linklabel" data-f="sd" data-k="label" value="${esc(d.label)}" placeholder="her enemy, love interest, brothers…"></label>
+      ${used.length ? `<div class="row g8 wrap">${used.map(u => `<button class="chip" data-a="alLabel" data-l="${esc(u)}">${esc(u)}</button>`).join('')}</div>` : ''}
+      <button class="btn-dark" data-a="alCreate">Connect</button>`);
+  } else if (UI.sheet === 'move') {
+    const n = S.notes.find(n => n.id === d.id); const c = charById(n.charId);
+    h = sheetFrame('Move to block', `<div class="card pad" style="font-size:15px;line-height:1.5">${esc(n.text)}</div>
+      <div class="stack g8">${c.blocks.map(b => `<button class="radio" data-a="mvTo" data-b="${b.id}"><span class="stack g4"><span style="font-size:15px;font-weight:600">${esc(b.name)}</span><span class="tiny muted">${b.type === 'list' ? 'Adds a new line' : 'Adds to the end'}</span></span></button>`).join('')}</div>
+      <div class="stack g8"><div class="label">Or make a new block from it</div><div class="row g8"><input class="field card grow" style="padding:12px 14px" data-f="sd" data-k="newBlock" value="${esc(d.newBlock)}" placeholder="Block name"><button class="btn-accent" data-a="mvNew">Add</button></div></div>`);
+  } else if (UI.sheet === 'linkNote') {
+    h = sheetFrame('Link to character', `<div class="stack g8">${S.chars.map(c => `<button class="radio" data-a="lnTo" data-id="${c.id}">${avatar(c, 32)}<span style="font-size:15px;font-weight:600">${esc(c.name || 'Unnamed')}</span></button>`).join('') || '<div class="empty-hint">No characters yet.</div>'}</div>`);
+  } else if (UI.sheet === 'addQ') {
+    h = sheetFrame('New help question', `<label class="stack g6"><span class="label">For the block</span><input class="field card" style="padding:12px 14px" data-f="sd" data-k="block" value="${esc(d.block)}" placeholder="e.g. Scars" autofocus></label>
+      <label class="stack g6"><span class="label">Question</span><textarea class="field card" style="padding:12px 14px;min-height:80px" data-f="sd" data-k="text" placeholder="e.g. Which scar do they never talk about?">${esc(d.text)}</textarea></label>
+      <button class="btn-dark" data-a="aqCreate">Add question</button>`);
+  } else if (UI.sheet === 'img') {
+    const c = charById(d.cid); const i = c.images.findIndex(x => x.id === d.id); const im = c.images[i];
+    h = `<div class="lightbox" data-a="closeSheet"><img src="${im.data}" alt="">
+      <div class="row g8" style="flex-wrap:wrap;justify-content:center">${c.images.length > 1 ? `<button class="btn-line" data-a="imgStep" data-d="-1">←</button><span style="color:#fff;font-size:14px">${i + 1} / ${c.images.length}</span><button class="btn-line" data-a="imgStep" data-d="1">→</button>` : ''}
+      ${i > 0 ? `<button class="btn-line" data-a="imgFirst">Use as portrait</button>` : ''}<button class="btn-line danger" data-a="imgDel">Delete</button><button class="btn-line" data-a="closeSheet">Close</button></div></div>`;
+  }
+  el.innerHTML = h;
+  autosize(el);
+}
+
+/* ---------- images ---------- */
+function pickImage() {
+  return new Promise(res => {
+    const inp = $('#filepick'); inp.value = '';
+    inp.onchange = async () => { const f = inp.files[0]; if (!f) return res(null); res(await compress(f)); };
+    inp.click();
+  });
+}
+function compress(file, max = 1200) {
+  return new Promise(res => {
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => { const s = Math.min(1, max / Math.max(img.width, img.height)); const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * s); cv.height = Math.round(img.height * s); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg', 0.82)); };
+    img.onerror = () => { toast('That image could not be read'); res(null); };
+    img.src = url;
+  });
+}
+
+/* ---------- toast ---------- */
+let toastT;
+function toast(msg) { let t = $('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg; t.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(() => t.style.display = 'none', 2600); }
+
+/* ---------- jot / notes ---------- */
+function addNote(text, charId) {
+  text = text.trim(); if (!text) return;
+  S.notes.push({ id: uid(), text, charId: charId || null, at: now() });
+  if (charId) { const c = charById(charId); c.updated = now(); }
+  else { const m = text.match(/^([A-Z][\p{L}'’-]{1,30})(?:\s|,|:|—|–|-|$)/u); if (m && !S.chars.some(c => norm(c.name).split(' ')[0] === norm(m[1])) && !['The','A','An','She','He','They','I','It','We','Maybe','Remember','Note'].includes(m[1])) UI.namePrompt = { name: m[1], noteId: S.notes[S.notes.length - 1].id }; }
+  save();
+}
+
+/* ---------- Dropbox ---------- */
+const DBX_FILE = '/Unfurl/unfurl-backup.json';
+function dbxToken() { try { return JSON.parse(localStorage.getItem('unfurl_dbx') || 'null'); } catch (e) { return null; } }
+function redirectUri() { return location.origin + location.pathname; }
+function b64url(buf) { return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+async function dbxConnect() {
+  const key = (S.settings.dropboxKey || '').trim(); if (!key) { toast('Paste your Dropbox app key first'); return; }
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const challenge = b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
+  localStorage.setItem('unfurl_pkce', JSON.stringify({ verifier, key }));
+  save(true);
+  location.href = 'https://www.dropbox.com/oauth2/authorize?' + new URLSearchParams({ client_id: key, response_type: 'code', code_challenge: challenge, code_challenge_method: 'S256', token_access_type: 'offline', redirect_uri: redirectUri() });
+}
+async function dbxFinish() {
+  const p = new URLSearchParams(location.search); const code = p.get('code'); if (!code) return;
+  history.replaceState(null, '', redirectUri());
+  const pk = JSON.parse(localStorage.getItem('unfurl_pkce') || 'null'); if (!pk) return;
+  try {
+    const r = await fetch('https://api.dropboxapi.com/oauth2/token', { method: 'POST', body: new URLSearchParams({ code, grant_type: 'authorization_code', code_verifier: pk.verifier, client_id: pk.key, redirect_uri: redirectUri() }) });
+    const j = await r.json(); if (!j.refresh_token) throw new Error(j.error_description || 'no token');
+    localStorage.setItem('unfurl_dbx', JSON.stringify({ refresh: j.refresh_token, key: pk.key }));
+    localStorage.removeItem('unfurl_pkce'); UI.view = 'settings'; toast('Dropbox connected');
+  } catch (e) { toast('Dropbox did not connect: ' + e.message); }
+}
+async function dbxAccess() {
+  const t = dbxToken(); if (!t) throw new Error('not connected');
+  const r = await fetch('https://api.dropboxapi.com/oauth2/token', { method: 'POST', body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: t.refresh, client_id: t.key }) });
+  const j = await r.json(); if (!j.access_token) throw new Error(j.error_description || 'sign-in expired'); return j.access_token;
+}
+async function dbxUp() {
+  if (!S.chars.length && !S.books.length) { toast('Nothing to back up yet'); return; }
+  try { toast('Backing up…'); const a = await dbxAccess();
+    const r = await fetch('https://content.dropboxapi.com/2/files/upload', { method: 'POST', headers: { Authorization: 'Bearer ' + a, 'Content-Type': 'application/octet-stream', 'Dropbox-API-Arg': JSON.stringify({ path: DBX_FILE, mode: 'overwrite', mute: true }) }, body: JSON.stringify(exportData()) });
+    if (!r.ok) throw new Error(await r.text()); S.settings.lastBackup = now(); save(); render(); toast('Backed up to Dropbox');
+  } catch (e) { toast('Backup failed: ' + String(e.message).slice(0, 80)); }
+}
+async function dbxDown() {
+  try { const a = await dbxAccess();
+    const r = await fetch('https://content.dropboxapi.com/2/files/download', { method: 'POST', headers: { Authorization: 'Bearer ' + a, 'Dropbox-API-Arg': JSON.stringify({ path: DBX_FILE }) } });
+    if (!r.ok) throw new Error('no backup found'); const data = await r.json();
+    importData(data);
+  } catch (e) { toast('Restore failed: ' + String(e.message).slice(0, 80)); }
+}
+function exportData() { return { app: 'Unfurl', version: VERSION, exported: new Date().toISOString(), state: S }; }
+function importData(data) {
+  const st = data && data.state ? data.state : data;
+  if (!st || !Array.isArray(st.chars)) { toast('That is not an Unfurl backup'); return; }
+  const n = st.chars.length;
+  if (!confirm(`Replace everything here with this backup (${plural(n, 'character', 'characters')})?`)) return;
+  const keepKey = S.settings.dropboxKey;
+  S = normalize(st); if (!S.settings.dropboxKey) S.settings.dropboxKey = keepKey;
+  save(true); render(); toast('Backup loaded');
+}
+
+/* ---------- actions ---------- */
+function go(v, extra) { Object.assign(UI, extra || {}); UI.view = v; UI.rename = null; save(); render(); if (!isWide()) window.scrollTo(0, 0); }
+const A = {
+  go: e => { const v = e.dataset.v; if (e.dataset.focus) UI.connFocus = e.dataset.focus; else if (v === 'connections' && UI.charId) UI.connFocus = UI.charId; go(v); },
+  goProfile: () => go('profile'),
+  open: e => { UI.charId = e.dataset.id; UI.connFocus = e.dataset.id; go('profile'); },
+  search: () => { UI.searching = !UI.searching; if (!UI.searching) UI.q = ''; render(); if (UI.searching) $('#searchbox')?.focus(); },
+  scopeSheet: () => openSheet('scope'),
+  scope: e => { UI.scope = e.dataset.s; UI.chip = e.dataset.chip || 'all'; UI.sheet = null; if (isWide() && !['notes', 'settings', 'connections'].includes(UI.view)) { UI.view = 'list'; UI.charId = (charsInScope()[0] || {}).id || null; } else if (!isWide()) UI.view = 'list'; save(); render(); },
+  chip: e => { UI.chip = e.dataset.chip; save(); render(); },
+  sugYes: () => { const s = suggestion(); if (s) { s.yes(); S.settings.declined.push(s.key); } save(); render(); },
+  sugNo: () => { const s = suggestion(); if (s) S.settings.declined.push(s.key); save(); render(); },
+  newChar: () => {
+    const bs = scopeBooks() || [];
+    openSheet('newChar', { name: '', pron: 'they', help: S.settings.helpDefault, books: bs.length === 1 ? [bs[0].id] : (UI.scope.startsWith('series:') ? [seriesBooks(UI.scope.slice(7)).slice(-1)[0]?.id].filter(Boolean) : bs.map(b => b.id)), image: null });
+  },
+  ncBook: e => { const d = UI.sd, id = e.dataset.id; d.books = d.books.includes(id) ? d.books.filter(x => x !== id) : [...d.books, id]; renderSheet(); },
+  ncWhole: () => { const bs = seriesBooks(UI.scope.slice(7)); const d = UI.sd; d.books = bs.every(b => d.books.includes(b.id)) ? [] : bs.map(b => b.id); renderSheet(); },
+  ncPron: e => { UI.sd.pron = e.dataset.p; renderSheet(); },
+  ncHelp: () => { UI.sd.help = !UI.sd.help; renderSheet(); },
+  ncImg: async () => { const im = await pickImage(); if (im) { UI.sd.image = im; renderSheet(); } },
+  ncChange: () => { closeSheet(); go('settings'); },
+  ncCreate: () => { const d = UI.sd; const p = d.pron === 'other' ? 'they' : d.pron;
+    const c = createChar({ name: d.name, pron: p, books: d.books, help: d.help, image: d.image }); if (d.pron === 'other') c.pronLabel = 'other';
+    if (d.linkFrom) S.links.push({ id: uid(), a: d.linkFrom, b: c.id, label: d.linkLabel || '' });
+    closeSheet(); UI.charId = c.id; go('profile'); },
+  newBook: () => { const ser = S.series.length ? 'add:' + S.series[S.series.length - 1].id : 'solo';
+    const kind = UI.scope.startsWith('series:') ? 'add:' + UI.scope.slice(7) : ser;
+    const d = { title: '', theme: Object.keys(THEMES)[S.books.length % 5], own: '', kind, seriesName: '', bring: {}, cover: null };
+    if (kind.startsWith('add:')) S.chars.filter(c => c.books.some(id => (bookById(id) || {}).series === kind.slice(4))).forEach(c => d.bring[c.id] = true);
+    openSheet('book', d); },
+  editBook: e => { const b = bookById(e.dataset.id); openSheet('book', { id: b.id, title: b.title, theme: b.theme, own: b.color || '', cover: b.cover || null }); },
+  bkKind: e => { const d = UI.sd; d.kind = e.dataset.k; d.bring = {};
+    if (d.kind.startsWith('add:')) S.chars.filter(c => c.books.some(id => (bookById(id) || {}).series === d.kind.slice(4))).forEach(c => d.bring[c.id] = true); renderSheet(); },
+  bkBring: e => { UI.sd.bring[e.dataset.id] = !UI.sd.bring[e.dataset.id]; renderSheet(); },
+  bkTheme: e => { UI.sd.theme = e.dataset.t; UI.sd.own = ''; renderSheet(); },
+  bkCover: async () => { const im = await pickImage(); if (im) { UI.sd.cover = im; renderSheet(); } },
+  bkSave: () => { const d = UI.sd; const title = (d.title || '').trim() || 'Untitled';
+    if (d.id) { const b = bookById(d.id); Object.assign(b, { title, theme: d.theme, color: d.own || null, cover: d.cover }); closeSheet(); save(); render(); return; }
+    let series = null, part = 1;
+    if (d.kind === 'new') { const s = { id: uid(), name: (d.seriesName || '').trim() || title }; S.series.push(s); series = s.id; }
+    else if (d.kind.startsWith('add:')) { series = d.kind.slice(4); part = seriesBooks(series).length + 1; }
+    const b = { id: uid(), title, series, part, theme: d.theme, color: d.own || null, cover: d.cover, created: now() };
+    S.books.push(b);
+    for (const cid in d.bring) if (d.bring[cid]) { const c = charById(cid); if (c && !c.books.includes(b.id)) c.books.push(b.id); }
+    UI.scope = series ? 'series:' + series : 'book:' + b.id; UI.chip = series ? b.id : 'all';
+    closeSheet(); if (!isWide()) UI.view = 'list'; save(); render(); toast(title + ' is ready'); },
+  bkDelete: () => { const b = bookById(UI.sd.id); if (!confirm(`Delete “${b.title}”? Characters stay, they just won't be in this book any more.`)) return;
+    S.books = S.books.filter(x => x !== b); S.chars.forEach(c => { c.books = c.books.filter(id => id !== b.id); c.hist = c.hist.filter(h => h.book !== b.id); });
+    if (b.series) { const rest = seriesBooks(b.series); rest.forEach((x, i) => x.part = i + 1); if (!rest.length) S.series = S.series.filter(s => s.id !== b.series); }
+    closeSheet(); save(); render(); },
+  closeSheet: () => closeSheet(),
+  sheetBg: (e, ev) => { if (ev.target === e) closeSheet(); },
+  helpChar: () => { const c = charById(UI.charId); c.help = !c.help; save(); render(); },
+  ask: e => { UI.ask[e.dataset.b] = !UI.ask[e.dataset.b]; const c = charById(UI.charId); const b = c && c.blocks.find(x => x.id === e.dataset.b); if (b && b.type === 'list') UI.open[b.id] = true; render(); },
+  rename: e => { UI.rename = e.dataset.b; render(); const el = document.querySelector(`[data-f=bname][data-b="${e.dataset.b}"]`); if (el) { el.focus(); el.select(); } },
+  renameDone: () => { UI.rename = null; save(); render(); },
+  fold: e => { UI.open[e.dataset.b] = !UI.open[e.dataset.b]; render(); },
+  pin: e => { const l = findLine(e); l.pin = !l.pin; save(); render(); },
+  delLine: e => { const c = charById(e.dataset.c), b = c.blocks.find(x => x.id === e.dataset.b), l = findLine(e);
+    if ((l.value || '').trim() && !confirm(`Remove the line “${l.label}”?`)) return; logChange(c, b, l, l.value, ''); b.lines = b.lines.filter(x => x !== l); save(); render(); },
+  addLine: e => { const c = charById(e.dataset.c), b = c.blocks.find(x => x.id === e.dataset.b); const l = { id: uid(), label: '', value: '', pin: false }; b.lines.push(l); save(); render();
+    document.querySelector(`[data-f=llabel][data-l="${l.id}"]`)?.focus(); },
+  addBlock: e => openSheet('addBlock', { cid: e.dataset.c, start: !!e.dataset.start, name: '', type: 'text' }),
+  abType: e => { UI.sd.type = e.dataset.t; renderSheet(); },
+  abCreate: () => { const d = UI.sd; const name = (d.name || '').trim(); if (!name) { toast('Give the block a name'); return; }
+    if (d.start) S.settings.startBlocks.push({ id: 'sb_' + uid(), tpl: toTpl(name), type: d.type, lines: [] });
+    else { const c = charById(d.cid); const b = { id: uid(), sid: null, tpl: null, name, type: d.type, text: '', lines: d.type === 'list' ? [{ id: uid(), label: '', value: '', pin: true }] : [] }; c.blocks.push(b); if (d.type === 'list') UI.open[b.id] = true; c.updated = now(); }
+    closeSheet(); save(); render(); },
+  addLink: e => openSheet('addLink', { cid: e.dataset.c, other: '', label: '', newName: '' }),
+  alOther: e => { UI.sd.other = e.dataset.id; renderSheet(); },
+  alLabel: e => { UI.sd.label = e.dataset.l; renderSheet(); },
+  alCreate: () => { const d = UI.sd; let other = d.other; if (!other) { toast('Pick a character'); return; }
+    const c = charById(d.cid);
+    if (other === 'new') { const n = createChar({ name: d.newName, pron: 'they', books: c.books.slice(), help: S.settings.helpDefault }); other = n.id; }
+    S.links.push({ id: uid(), a: d.cid, b: other, label: (d.label || '').trim() || 'connected' }); closeSheet(); save(); render(); },
+  delLink: e => { const l = S.links.find(x => x.id === e.dataset.id); if (!confirm(`Remove the connection “${l.label}”?`)) return; S.links = S.links.filter(x => x !== l); save(); render(); },
+  connFocus: e => { UI.connFocus = e.dataset.id; save(); render(); },
+  connFilter: e => { UI.connFilter = e.dataset.l; render(); },
+  jot: e => { const inp = $('#jot'); const cid = e.dataset.c || UI.noteFor || null; addNote(inp.value, cid); inp.value = ''; render(); if (cid) toast('Noted'); },
+  npYes: () => { const np = UI.namePrompt; const bs = scopeBooks() || []; const c = createChar({ name: np.name, pron: 'they', books: bs.length === 1 ? [bs[0].id] : bs.slice(-1).map(b => b.id), help: S.settings.helpDefault });
+    const n = S.notes.find(n => n.id === np.noteId); if (n) n.charId = c.id; UI.namePrompt = null; save(); render(); toast(c.name + ' is a new character'); },
+  npNo: () => { UI.namePrompt = null; render(); },
+  delNote: e => { if (!confirm('Delete this note?')) return; S.notes = S.notes.filter(n => n.id !== e.dataset.id); save(); render(); },
+  moveNote: e => openSheet('move', { id: e.dataset.id, newBlock: '' }),
+  linkNote: e => openSheet('linkNote', { id: e.dataset.id }),
+  lnTo: e => { const n = S.notes.find(n => n.id === UI.sd.id); n.charId = e.dataset.id; closeSheet(); save(); render(); },
+  mvTo: e => { const n = S.notes.find(n => n.id === UI.sd.id); const c = charById(n.charId); const b = c.blocks.find(x => x.id === e.dataset.b); moveNoteInto(n, c, b); },
+  mvNew: () => { const n = S.notes.find(n => n.id === UI.sd.id); const c = charById(n.charId); const name = (UI.sd.newBlock || '').trim(); if (!name) { toast('Give the block a name'); return; }
+    const b = { id: uid(), sid: null, tpl: null, name, type: 'text', text: '', lines: [] }; c.blocks.push(b); moveNoteInto(n, c, b); },
+  addImg: async e => { const c = charById(e.dataset.c); const im = await pickImage(); if (im) { c.images.push({ id: uid(), data: im }); c.updated = now(); save(); render(); } },
+  viewImg: e => openSheet('img', { cid: e.dataset.c, id: e.dataset.i }),
+  imgStep: (e, ev) => { ev.stopPropagation(); const c = charById(UI.sd.cid); let i = c.images.findIndex(x => x.id === UI.sd.id) + +e.dataset.d; i = (i + c.images.length) % c.images.length; UI.sd.id = c.images[i].id; renderSheet(); },
+  imgFirst: (e, ev) => { ev.stopPropagation(); const c = charById(UI.sd.cid); const i = c.images.findIndex(x => x.id === UI.sd.id); c.images.unshift(c.images.splice(i, 1)[0]); save(); closeSheet(); render(); },
+  imgDel: (e, ev) => { ev.stopPropagation(); if (!confirm('Delete this image?')) return; const c = charById(UI.sd.cid); c.images = c.images.filter(x => x.id !== UI.sd.id); save(); closeSheet(); render(); },
+  pron: e => { const c = charById(e.dataset.c); const p = e.dataset.p; setPron(c, p === 'other' ? 'they' : p); c.pronLabel = p === 'other' ? 'other' : null; save(); render(); },
+  charBook: e => { const c = charById(e.dataset.c), id = e.dataset.id; c.books = c.books.includes(id) ? c.books.filter(x => x !== id) : [...c.books, id]; save(); render(); },
+  mvBlock: e => { const c = charById(e.dataset.c); const i = c.blocks.findIndex(b => b.id === e.dataset.b); const j = i + +e.dataset.d; if (j < 0 || j >= c.blocks.length) return; [c.blocks[i], c.blocks[j]] = [c.blocks[j], c.blocks[i]]; save(); render(); },
+  btype: e => { const c = charById(e.dataset.c); const b = c.blocks.find(x => x.id === e.dataset.b); convertBlock(b, e.dataset.t); save(); render(); },
+  delBlock: e => { const c = charById(e.dataset.c); const b = c.blocks.find(x => x.id === e.dataset.b);
+    if (blockFilled(b) && !confirm(`Remove “${b.name}” for ${c.name || 'this character'}? What's written in it will be gone.`)) return; c.blocks = c.blocks.filter(x => x !== b); save(); render(); },
+  delChar: e => { const c = charById(e.dataset.c); if (!confirm(`Delete ${c.name || 'this character'} and everything about them?`)) return;
+    S.chars = S.chars.filter(x => x !== c); S.links = S.links.filter(l => l.a !== c.id && l.b !== c.id); S.notes.forEach(n => { if (n.charId === c.id) n.charId = null; }); UI.charId = null; go('list'); },
+  helpDefault: () => { S.settings.helpDefault = !S.settings.helpDefault; save(); render(); },
+  qOn: e => { const q = S.settings.questions.find(x => x.id === e.dataset.id); q.on = !q.on; save(); render(); },
+  delQ: e => { S.settings.questions = S.settings.questions.filter(x => x.id !== e.dataset.id); save(); render(); },
+  addQ: () => openSheet('addQ', { block: '', text: '' }),
+  aqCreate: () => { const d = UI.sd; if (!(d.block || '').trim() || !(d.text || '').trim()) { toast('Fill in both'); return; }
+    S.settings.questions.push({ id: 'q_' + uid(), block: d.block.trim(), text: toTpl(d.text.trim()), on: true }); closeSheet(); save(); render(); },
+  mvSb: e => { const a = S.settings.startBlocks; const i = a.findIndex(x => x.id === e.dataset.id); const j = i + +e.dataset.d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; save(); render(); },
+  sbType: e => { const sb = S.settings.startBlocks.find(x => x.id === e.dataset.id); sb.type = e.dataset.t; sb.lines = sb.lines || []; save(); render(); },
+  delSb: e => { const a = S.settings.startBlocks; const sb = a.find(x => x.id === e.dataset.id); if (!confirm(`Take “${fill(sb.tpl, 'they')}” out of your start blocks? Characters that have it keep it.`)) return; S.settings.startBlocks = a.filter(x => x !== sb); save(); render(); },
+  sbOpen: e => { UI.sbOpen = UI.sbOpen === e.dataset.id ? null : e.dataset.id; render(); },
+  sbPin: e => { const sb = S.settings.startBlocks.find(x => x.id === e.dataset.id); const l = sb.lines[+e.dataset.j]; l.pin = !l.pin; save(); render(); },
+  sbDelLine: e => { const sb = S.settings.startBlocks.find(x => x.id === e.dataset.id); sb.lines.splice(+e.dataset.j, 1); save(); render(); },
+  sbAddLine: e => { const sb = S.settings.startBlocks.find(x => x.id === e.dataset.id); sb.lines.push({ label: '', pin: false }); save(); render(); const els = document.querySelectorAll(`[data-f=sbline][data-id="${sb.id}"]`); els[els.length - 1]?.focus(); },
+  dark: () => { S.settings.dark = !S.settings.dark; save(); render(); },
+  dbxConnect: () => dbxConnect(),
+  dbxUp: () => dbxUp(),
+  dbxDown: () => dbxDown(),
+  dbxOff: () => { if (!confirm('Disconnect Dropbox? Your backup in Dropbox stays.')) return; localStorage.removeItem('unfurl_dbx'); render(); },
+  export: () => { const blob = new Blob([JSON.stringify(exportData(), null, 1)], { type: 'application/json' }); const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'unfurl-backup-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); a.remove(); },
+  import: () => { const inp = $('#importpick'); inp.value = ''; inp.onchange = async () => { const f = inp.files[0]; if (!f) return; try { importData(JSON.parse(await f.text())); } catch (e) { toast('That file could not be read'); } }; inp.click(); }
+};
+function findLine(e) { const c = charById(e.dataset.c), b = c.blocks.find(x => x.id === e.dataset.b); return b.lines.find(x => x.id === e.dataset.l); }
+function convertBlock(b, t) {
+  if (b.type === t) return;
+  if (t === 'list') { const txt = (b.text || '').trim(); b.lines = txt ? txt.split('\n').filter(Boolean).map(s => { const m = s.match(/^([^:]{1,24}):\s*(.*)$/); return { id: uid(), label: m ? m[1].trim() : '', value: m ? m[2] : s, pin: false }; }) : (b.lines.length ? b.lines : [{ id: uid(), label: '', value: '', pin: true }]); }
+  else { const lines = b.lines.filter(l => (l.value || '').trim() || (l.label || '').trim()); b.text = [b.text, ...lines.map(l => l.label ? l.label + ': ' + (l.value || '') : l.value)].filter(s => (s || '').trim()).join('\n'); }
+  b.type = t;
+}
+function moveNoteInto(n, c, b) {
+  if (b.type === 'list') { const m = n.text.match(/^([^:]{1,24}):\s*(.+)$/s); const l = { id: uid(), label: m ? m[1].trim() : 'Note', value: m ? m[2].trim() : n.text, pin: false }; b.lines.push(l); logChange(c, b, l, '', l.value); UI.open[b.id] = true; }
+  else { const from = b.text; b.text = (b.text.trim() ? b.text.replace(/\s+$/, '') + '\n' : '') + n.text; logChange(c, b, null, from, b.text); }
+  S.notes = S.notes.filter(x => x !== n); c.updated = now(); closeSheet(); save(); render(); toast('Moved to ' + b.name);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-a]'); if (!el) return;
+  const fn = A[el.dataset.a]; if (!fn) return;
+  if (el.dataset.a !== 'sheetBg' && el.dataset.a !== 'closeSheet') ev.preventDefault();
+  if (el.dataset.a === 'closeSheet' && el.classList.contains('lightbox') && ev.target !== el) return;
+  fn(el, ev);
+});
+let editStart = null;
+document.addEventListener('focusin', ev => {
+  const t = ev.target; const f = t.dataset && t.dataset.f;
+  if (f === 'btext' || f === 'lval') editStart = { el: t, value: t.value };
+});
+document.addEventListener('focusout', ev => {
+  const t = ev.target; const f = t.dataset && t.dataset.f;
+  if ((f === 'btext' || f === 'lval') && editStart && editStart.el === t) {
+    const c = charById(t.dataset.c); if (c) { const b = c.blocks.find(x => x.id === t.dataset.b); if (b) logChange(c, b, f === 'lval' ? b.lines.find(x => x.id === t.dataset.l) : null, editStart.value, t.value); save(); }
+    editStart = null;
+  }
+  if (f === 'bname') { save(); setTimeout(() => { if (UI.rename && !document.activeElement?.matches('[data-f=bname]')) UI.rename = null; }, 150); }
+  if (f === 'cname' || f === 'btext' || f === 'lval') setTimeout(refreshList, 250);
+});
+document.addEventListener('input', ev => {
+  const t = ev.target; const f = t.dataset && t.dataset.f; if (!f) return;
+  const c = t.dataset.c && charById(t.dataset.c);
+  const b = c && t.dataset.b && c.blocks.find(x => x.id === t.dataset.b);
+  if (t.tagName === 'TEXTAREA') { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+  switch (f) {
+    case 'cname': c.name = t.value; c.updated = now(); break;
+    case 'btext': b.text = t.value; break;
+    case 'lval': b.lines.find(x => x.id === t.dataset.l).value = t.value; break;
+    case 'llabel': b.lines.find(x => x.id === t.dataset.l).label = t.value; break;
+    case 'bname': b.name = t.value; b.tpl = null; break;
+    case 'search': UI.q = t.value; { const pos = t.selectionStart; render(); const s = $('#searchbox'); if (s) { s.focus(); s.setSelectionRange(pos, pos); } } return;
+    case 'sd': UI.sd[t.dataset.k] = t.value; return;
+    case 'sdColor': UI.sd.own = t.value; renderSheet(); return;
+    case 'noteFor': UI.noteFor = t.value; return;
+    case 'qtext': S.settings.questions.find(x => x.id === t.dataset.id).text = toTpl(t.value); break;
+    case 'sbname': S.settings.startBlocks.find(x => x.id === t.dataset.id).tpl = toTpl(t.value); break;
+    case 'sbline': S.settings.startBlocks.find(x => x.id === t.dataset.id).lines[+t.dataset.j].label = t.value; break;
+    case 'dbxKey': S.settings.dropboxKey = t.value.trim(); break;
+  }
+  save();
+});
+document.addEventListener('change', ev => { const t = ev.target; if (t.dataset && t.dataset.f === 'noteFor') UI.noteFor = t.value; });
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Enter' && ev.target.id === 'jot') { ev.preventDefault(); const btn = ev.target.parentElement.querySelector('[data-a=jot]'); A.jot(btn); }
+  if (ev.key === 'Enter' && ev.target.dataset && ev.target.dataset.f === 'bname') { ev.preventDefault(); UI.rename = null; save(); render(); }
+  if (ev.key === 'Enter' && ev.target.dataset && (ev.target.dataset.f === 'lval' || ev.target.dataset.f === 'llabel')) { ev.preventDefault(); ev.target.blur(); }
+  if (ev.key === 'Escape' && UI.sheet) closeSheet();
+});
+let wasWide = isWide();
+addEventListener('resize', () => { if (isWide() !== wasWide) { wasWide = isWide(); render(); } });
+
+/* ---------- start ---------- */
+(async () => {
+  await store.open();
+  const saved = await store.get('state');
+  S = normalize(saved || defaultState());
+  await dbxFinish();
+  render();
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+<style>
+.nd0{fill:#EBDDF0}.nd1{fill:#E2E6F2}.nd2{fill:#F3E0E4}.nd3{fill:#E3EEE6}.nd4{fill:#EFEAE0}.nd5{fill:#E0ECEF}
+.ndt0{fill:#5A3768}.ndt1{fill:#34406A}.ndt2{fill:#7A3346}.ndt3{fill:#2F5A3C}.ndt4{fill:#5E4E2E}.ndt5{fill:#2E5560}
+.dark .nd0{fill:#3A2A45}.dark .nd1{fill:#2B3250}.dark .nd2{fill:#4A2A33}.dark .nd3{fill:#24382A}.dark .nd4{fill:#3B3426}.dark .nd5{fill:#22363B}
+.dark .ndt0{fill:#E3C9EE}.dark .ndt1{fill:#C8D1F0}.dark .ndt2{fill:#F2C6D1}.dark .ndt3{fill:#C6E3CF}.dark .ndt4{fill:#E8D9B8}.dark .ndt5{fill:#C2E0E6}
+</style>
+</body>
+</html>

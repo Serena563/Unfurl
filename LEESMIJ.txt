@@ -1,0 +1,61 @@
+UNFURL — versie 2026-11-16c
+===========================
+
+Wat zit erin
+- index.html      de app zelf
+- manifest.json   zodat je hem als icoon op je iPhone kunt zetten
+- sw.js           zodat hij ook zonder internet opent
+- icon-192.png / icon-512.png   het icoon
+
+ZO ZET JE HEM ONLINE (GitHub Pages)
+1. Maak op GitHub een nieuwe repository, bijvoorbeeld "unfurl" (Public).
+2. Klik op "Add file" en dan "Upload files". Sleep alle bestanden uit deze ZIP erin
+   (niet de map zelf, alleen de bestanden). Klik op "Commit changes".
+3. Ga naar Settings, dan Pages. Kies bij Branch "main" en "/ (root)". Klik op Save.
+4. Na een minuutje staat hij op: https://<jouw-gebruikersnaam>.github.io/unfurl/
+5. Op je iPhone: open die link in Safari, tik op Delen en dan "Zet op beginscherm".
+
+Bij een nieuwe versie upload je alleen index.html opnieuw (en sw.js als die ook nieuw is).
+
+BACK-UP NAAR DROPBOX (eenmalig instellen)
+Je kunt dezelfde Dropbox-app gebruiken als voor je andere apps.
+1. Ga naar dropbox.com/developers/apps en open je app.
+2. Bij "Settings", onder "OAuth 2" en "Redirect URIs", voeg je toe:
+   https://<jouw-gebruikersnaam>.github.io/unfurl/
+   (precies zo, met de / aan het eind) en klik op Add.
+3. Kijk bij "Permissions" of files.content.write en files.content.read aan staan.
+4. Kopieer de "App key" (staat bovenaan bij Settings).
+5. In Unfurl: Settings, dan Backup. Plak de app key en tik op "Connect Dropbox".
+6. Daarna tik je op "Back up to Dropbox" wanneer je wilt. Het bestand komt in
+   Dropbox in de map /Apps/<naam van je app>/Unfurl/ of /Unfurl/.
+   Met "Restore" haal je hem terug, bijvoorbeeld op je laptop.
+
+Let op: de app op je iPhone-beginscherm en in Safari bewaren hun gegevens apart.
+Gebruik dus steeds dezelfde (het icoon), en zet gegevens over met Dropbox of
+Export file / Import file.
+
+Is je opslag leeg (bijvoorbeeld op een nieuw apparaat), dan weigert de app een
+back-up te maken. Zo kan een lege app je Dropbox-back-up nooit overschrijven.
+
+WAT ZIT ER IN DEZE EERSTE VERSIE
+- Personages met alleen een naam beginnen; niets is verplicht.
+- Blokken met je eigen namen, als tekst of als lijst. Looks is een lijst die
+  inklapt tot je vastgepinde regels (zoals Eyes en Hair).
+- Voornaamwoorden per personage; de startblokken lopen dan vanzelf goed
+  ("Where she comes from" / "Where they come from").
+- "Help me get started": grijze hulpvragen in lege blokken. Aan of uit per
+  personage, standaard in Settings, en een vraagteken per blok.
+  In Settings herschrijf je de vragen of zet je ze per stuk uit.
+- Losse notities: snel iets noteren, later naar een blok verplaatsen.
+  Typ je een notitie die met een nieuwe naam begint, dan vraagt de app of dat
+  een nieuw personage moet worden.
+- Boeken en series, elk boek met een eigen kleurthema. Bij een nieuw deel neem
+  je personages mee.
+- Groei per boek: wat je verandert terwijl je in een boek werkt, wordt voor dat
+  boek bewaard. Kies bovenaan de lijst het boek waarin je werkt.
+- Verbanden in je eigen woorden, plus een overzichtskaart.
+- Afbeeldingen per personage (worden verkleind opgeslagen).
+- De app leert: als je hetzelfde blok bij drie personages toevoegt, of een
+  startblok steeds leeg laat, stelt hij iets voor. Jij zegt ja of nee, en een
+  nee onthoudt hij.
+- Donkere modus, laptopweergave in drie kolommen, Export/Import en Dropbox.
